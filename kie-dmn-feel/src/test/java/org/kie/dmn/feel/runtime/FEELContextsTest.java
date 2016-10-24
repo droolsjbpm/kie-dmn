@@ -44,7 +44,7 @@ public class FEELContextsTest extends BaseFEELTest {
                             put( "salutation", "Hello Bob" );
                         }} },
                 // Example from spec. chapter "10.3.2.7 Ranges"
-                { "{\n" + "startdate: date(\"1978-09-12\"), enddate: date(\"1978-10-12\"), rangedates: [startdate..enddate] }",
+                { "{ startdate: date(\"1978-09-12\"), enddate: date(\"1978-10-12\"), rangedates: [startdate..enddate] }",
                         new HashMap<String,Object>() {{
                             put( "startdate", LocalDate.of(1978, 9, 12) );
                             put( "enddate", LocalDate.of(1978, 10, 13) );
