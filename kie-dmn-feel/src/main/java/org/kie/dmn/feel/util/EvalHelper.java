@@ -38,8 +38,25 @@ import java.util.stream.Stream;
 public class EvalHelper {
     public static final Logger LOG = LoggerFactory.getLogger( EvalHelper.class );
 
+    private static String removeBlankSpaces(String variableName) {
+        StringBuilder sb = new StringBuilder(variableName);
+        int j = 0;
+        boolean lastSpace = false;
+        for (int i = 0; i < sb.length(); i++) {
+            if (!Character.isWhitespace(sb.charAt(i))) {
+                sb.setCharAt(j++, sb.charAt(i));
+                lastSpace = false;
+            } else if (!lastSpace) {
+                sb.setCharAt(j++, sb.charAt(i));
+                lastSpace = true;
+            }
+        }
+        sb.delete(j, sb.length());
+        return sb.toString();
+    }
+
     public static String normalizeVariableName(String name) {
-        return name.replaceAll( "\\s+", " " );
+        return removeBlankSpaces(name);
     }
 
     public static BigDecimal getBigDecimalOrNull(Object value) {
