@@ -1,6 +1,5 @@
 package org.kie.dmn.feel.lang.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,6 @@ public class MapBackedType implements CustomType {
 
     /**
      * Utility constructor by reflection over key-value pairs.
-     * @param fields
      */
     public MapBackedType(Map<String, ?> map) {
         map.entrySet().stream()
