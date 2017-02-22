@@ -716,5 +716,5 @@ LINE_COMMENT
     ;
 
 ANY_OTHER_CHAR
-    : .
+    : ~[ \t\r\n\u000c]
     ;

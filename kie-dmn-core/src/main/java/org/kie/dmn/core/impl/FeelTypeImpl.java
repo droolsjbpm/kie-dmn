@@ -19,6 +19,7 @@ package org.kie.dmn.core.impl;
 import org.kie.dmn.api.core.DMNType;
 import org.kie.dmn.feel.lang.Type;
 import org.kie.dmn.feel.lang.types.BuiltInType;
+import org.kie.dmn.feel.runtime.UnaryTest;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +39,7 @@ public class FeelTypeImpl
         this( name, id, null, false, null );
     }
 
-    public FeelTypeImpl(String name, String id, Type feelType, boolean isCollection, List<?> allowedValues) {
+    public FeelTypeImpl(String name, String id, Type feelType, boolean isCollection, List<UnaryTest> allowedValues) {
         super( name, id, isCollection );
         this.feelType = feelType;
         setAllowedValues( allowedValues );

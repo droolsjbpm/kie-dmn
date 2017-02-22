@@ -21,14 +21,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.kie.dmn.api.core.DMNType;
+import org.kie.dmn.feel.runtime.UnaryTest;
 
 public abstract class BaseDMNTypeImpl
         implements DMNType {
 
-    private String  name;
-    private String  id;
-    private boolean collection;
-    private List<?> allowedValues;
+    private String          name;
+    private String          id;
+    private boolean         collection;
+    private List<UnaryTest> allowedValues;
 
     public BaseDMNTypeImpl(String name, String id, boolean collection) {
         this.name = name;
@@ -78,11 +79,11 @@ public abstract class BaseDMNTypeImpl
         return false;
     }
 
-    public List<?> getAllowedValues() {
+    public List<UnaryTest> getAllowedValues() {
         return allowedValues;
     }
 
-    public void setAllowedValues(List<?> allowedValues) {
+    public void setAllowedValues(List<UnaryTest> allowedValues) {
         this.allowedValues = allowedValues;
     }
 

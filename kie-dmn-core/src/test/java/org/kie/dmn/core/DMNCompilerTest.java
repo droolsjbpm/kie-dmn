@@ -30,6 +30,8 @@ import org.kie.dmn.api.core.ast.ItemDefNode;
 import org.kie.dmn.core.impl.CompositeTypeImpl;
 import org.kie.dmn.core.impl.FeelTypeImpl;
 import org.kie.dmn.core.util.DMNRuntimeUtil;
+import org.kie.dmn.feel.lang.EvaluationContext;
+import org.kie.dmn.feel.lang.impl.EvaluationContextImpl;
 import org.kie.dmn.feel.lang.types.BuiltInType;
 
 public class DMNCompilerTest {
@@ -54,12 +56,13 @@ public class DMNCompilerTest {
 
         FeelTypeImpl feelType = (FeelTypeImpl) type;
 
+        EvaluationContext ctx = new EvaluationContextImpl( null );
         assertThat( feelType.getFeelType(), is( BuiltInType.STRING ) );
         assertThat( feelType.getAllowedValues().size(), is( 4 ) );
-        assertThat( feelType.getAllowedValues().get( 0 ), is( "UNEMPLOYED" ) );
-        assertThat( feelType.getAllowedValues().get( 1 ), is( "EMPLOYED" ) );
-        assertThat( feelType.getAllowedValues().get( 2 ), is( "SELF-EMPLOYED" ) );
-        assertThat( feelType.getAllowedValues().get( 3 ), is( "STUDENT" ) );
+        assertThat( feelType.getAllowedValues().get( 0 ).apply( ctx, "UNEMPLOYED" ), is( true ) );
+        assertThat( feelType.getAllowedValues().get( 1 ).apply( ctx, "EMPLOYED" ), is( true )   );
+        assertThat( feelType.getAllowedValues().get( 2 ).apply( ctx, "SELF-EMPLOYED" ), is( true )  );
+        assertThat( feelType.getAllowedValues().get( 3 ).apply( ctx, "STUDENT" ), is( true )  );
     }
 
     @Test

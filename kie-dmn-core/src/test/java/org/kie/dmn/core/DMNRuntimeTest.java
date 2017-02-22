@@ -624,7 +624,7 @@ public class DMNRuntimeTest {
         DMNRuntime runtime = DMNRuntimeUtil.createRuntime( "DT_using_variables.dmn", this.getClass() );
         DMNModel dmnModel = runtime.getModel( "http://www.trisotech.com/definitions/_ed1ec15b-40aa-424d-b1d0-4936df80b135", "DT Using variables" );
         assertThat( dmnModel, notNullValue() );
-        assertThat( dmnModel.hasErrors(), is( false ) );
+        assertThat( formatMessages( dmnModel.getMessages() ), dmnModel.hasErrors(), is( false ) );
 
         Map<String, Object> complex = new HashMap<>(  );
         complex.put( "aBoolean", true );
@@ -674,7 +674,7 @@ public class DMNRuntimeTest {
         DMNRuntime runtime = DMNRuntimeUtil.createRuntime( "Get_Viable_Loan_Products.dmn", this.getClass() );
         DMNModel dmnModel = runtime.getModel( "http://www.trisotech.com/definitions/_3e1a628d-36bc-45f1-8464-b201735e5ce0", "Get Viable Loan Products" );
         assertThat( dmnModel, notNullValue() );
-        assertThat( dmnModel.hasErrors(), is( false ) );
+        assertThat( formatMessages( dmnModel.getMessages() ), dmnModel.hasErrors(), is( false ) );
 
         Map<String, Object> requested = new HashMap<>(  );
         requested.put( "PropertyZIP", "91001" );
