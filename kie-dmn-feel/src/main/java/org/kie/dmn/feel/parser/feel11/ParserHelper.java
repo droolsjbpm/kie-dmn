@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.kie.dmn.api.feel.runtime.events.FEELEvent;
-import org.kie.dmn.feel.lang.CustomType;
+import org.kie.dmn.feel.lang.CompositeType;
 import org.kie.dmn.feel.lang.Property;
 import org.kie.dmn.feel.lang.impl.FEELEventListenersManager;
 import org.kie.dmn.feel.lang.impl.JavaBackedType;
@@ -110,10 +110,10 @@ public class ParserHelper {
             currentScope = s;
         } else { 
             Symbol resolved = this.currentScope.resolve(name);
-            if ( resolved != null && resolved.getType() instanceof CustomType ) {
+            if ( resolved != null && resolved.getType() instanceof CompositeType ) {
                 pushName(name);
                 pushScope();
-                CustomType type = (CustomType) resolved.getType();
+                CompositeType type = (CompositeType) resolved.getType();
                 for ( Property f : type.getProperties().values() ) {
                     this.currentScope.define(new VariableSymbol( f.getName(), f.getType() ));
                 }

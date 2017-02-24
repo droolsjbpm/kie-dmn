@@ -2,18 +2,16 @@ package org.kie.dmn.feel.lang.impl;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import org.kie.dmn.feel.lang.CustomType;
+import org.kie.dmn.feel.lang.CompositeType;
 import org.kie.dmn.feel.lang.FEELProperty;
 import org.kie.dmn.feel.lang.FEELType;
 import org.kie.dmn.feel.lang.Property;
@@ -22,7 +20,7 @@ import org.kie.dmn.feel.lang.types.BuiltInType;
 import org.kie.dmn.feel.parser.feel11.ParserHelper;
 import org.kie.dmn.feel.util.EvalHelper;
 
-public class JavaBackedType implements CustomType {
+public class JavaBackedType implements CompositeType {
     private static Map<Class<?>, JavaBackedType> cache = new HashMap<>();
     
     private static Set<Method> javaObjectMethods = new HashSet<>( Arrays.asList( Object.class.getMethods() ) );
