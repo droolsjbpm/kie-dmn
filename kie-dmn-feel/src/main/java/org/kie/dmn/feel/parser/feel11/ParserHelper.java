@@ -59,7 +59,7 @@ public class ParserHelper {
     private SymbolTable   symbols      = new SymbolTable();
     private Scope         currentScope = symbols.getGlobalScope();
     private Stack<String> currentName  = new Stack<>();
-    private boolean dynamicResolution;
+    private int dynamicResolution = 0;
 
     public ParserHelper() {
         this( null );
@@ -130,7 +130,7 @@ public class ParserHelper {
     }
 
     public void validateVariable( ParserRuleContext ctx, List<String> qn, String name ) {
-        if( eventsManager != null && !dynamicResolution ) {
+        if( eventsManager != null && !isDynamicResolution() ) {
             if( this.currentScope.getChildScopes().get( name ) == null && this.currentScope.resolve( name ) == null ) {
                 // report error
                 FEELEventListenersManager.notifyListeners( eventsManager , () -> {
@@ -146,12 +146,18 @@ public class ParserHelper {
         }
     }
 
+    public boolean isDynamicResolution() {
+        return dynamicResolution > 0;
+    }
+
     public void disableDynamicResolution() {
-        this.dynamicResolution = false;
+        if( dynamicResolution > 0 ) {
+            this.dynamicResolution--;
+        }
     }
 
     public void enableDynamicResolution() {
-        this.dynamicResolution = true;
+        this.dynamicResolution++;
     }
     
     public void defineVariable(ParserRuleContext ctx) {
