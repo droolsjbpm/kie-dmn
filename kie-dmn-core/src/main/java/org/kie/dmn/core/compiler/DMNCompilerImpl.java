@@ -26,14 +26,11 @@ import org.kie.dmn.core.api.DMNExpressionEvaluator;
 import org.kie.dmn.api.core.ast.DMNNode;
 import org.kie.dmn.api.core.ast.DecisionNode;
 import org.kie.dmn.api.core.ast.InputDataNode;
-import org.kie.dmn.api.core.ast.ItemDefNode;
 import org.kie.dmn.backend.marshalling.v1_1.DMNMarshallerFactory;
 import org.kie.dmn.core.ast.*;
 import org.kie.dmn.core.impl.BaseDMNTypeImpl;
 import org.kie.dmn.core.impl.CompositeTypeImpl;
 import org.kie.dmn.core.impl.DMNModelImpl;
-import org.kie.dmn.core.impl.SimpleTypeImpl;
-import org.kie.dmn.feel.lang.Type;
 import org.kie.dmn.feel.lang.types.BuiltInType;
 import org.kie.dmn.feel.model.v1_1.*;
 import org.kie.dmn.feel.parser.feel11.FEELParser;
@@ -46,7 +43,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 
 public class DMNCompilerImpl
         implements DMNCompiler {
@@ -130,7 +126,6 @@ public class DMNCompilerImpl
                 if ( bkm.getVariable() != null && bkm.getVariable().getTypeRef() != null ) {
                     type = resolveTypeRef( model, bkmn, bkm, bkm.getVariable(), bkm.getVariable().getTypeRef() );
                 } else {
-                    // TODO: need to handle cases where the variable is not defined or does not have a type;
                     // for now the call bellow will return type UNKNOWN
                     type = resolveTypeRef( model, bkmn, bkm, bkm, null );
                 }
@@ -295,11 +290,14 @@ public class DMNCompilerImpl
                     }
                 }
             } else if( type == null ) {
+                String errorMsg = null;
                 if ( model.getName() != null && node.getName() != null && model.getName().equals( node.getName() ) ) {
-                    logger.error( "No '" + typeRef.toString() + "' type definition found for node '" + node.getName() + "'" );
+                    errorMsg = "No '" + typeRef.toString() + "' type definition found for node '" + node.getName() + "'";
                 } else {
-                    logger.error( "No '" + typeRef.toString() + "' type definition found for element '" + model.getName() + "' on node '" + node.getName() + "'" );
+                    errorMsg = "No '" + typeRef.toString() + "' type definition found for element '" + model.getName() + "' on node '" + node.getName() + "'";
                 }
+                logger.error( errorMsg );
+                dmnModel.addMessage( DMNMessage.Severity.ERROR, errorMsg, node.getId() );
             }
             return type;
         }
