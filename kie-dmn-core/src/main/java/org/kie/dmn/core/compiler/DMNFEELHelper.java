@@ -5,6 +5,7 @@ import org.kie.dmn.api.core.DMNType;
 import org.kie.dmn.api.core.ast.DMNNode;
 import org.kie.dmn.api.feel.runtime.events.FEELEvent;
 import org.kie.dmn.api.feel.runtime.events.FEELEventListener;
+import org.kie.dmn.core.impl.BaseDMNTypeImpl;
 import org.kie.dmn.core.impl.DMNModelImpl;
 import org.kie.dmn.feel.FEEL;
 import org.kie.dmn.feel.lang.CompiledExpression;
@@ -43,8 +44,7 @@ public class DMNFEELHelper
         CompilerContext feelctx = feel.newCompilerContext();
 
         for( Map.Entry<String, DMNType> entry : ctx.getVariables().entrySet() ) {
-            // TODO: need to properly resolve types here
-            feelctx.addInputVariableType( entry.getKey(), BuiltInType.UNKNOWN );
+            feelctx.addInputVariableType( entry.getKey(), ((BaseDMNTypeImpl)entry.getValue()).getFeelType() );
         }
         CompiledExpression ce = feel.compile( expression, feelctx );
         processEvents( model, element, errorMsg );

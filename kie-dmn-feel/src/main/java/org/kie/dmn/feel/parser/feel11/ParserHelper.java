@@ -23,7 +23,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.kie.dmn.api.feel.runtime.events.FEELEvent;
 import org.kie.dmn.feel.lang.CompositeType;
-import org.kie.dmn.feel.lang.Property;
 import org.kie.dmn.feel.lang.impl.FEELEventListenersManager;
 import org.kie.dmn.feel.lang.impl.JavaBackedType;
 import org.kie.dmn.feel.lang.Scope;
@@ -60,6 +59,7 @@ public class ParserHelper {
     private SymbolTable   symbols      = new SymbolTable();
     private Scope         currentScope = symbols.getGlobalScope();
     private Stack<String> currentName  = new Stack<>();
+    private boolean dynamicResolution;
 
     public ParserHelper() {
         this( null );
@@ -114,8 +114,8 @@ public class ParserHelper {
                 pushName(name);
                 pushScope();
                 CompositeType type = (CompositeType) resolved.getType();
-                for ( Property f : type.getProperties().values() ) {
-                    this.currentScope.define(new VariableSymbol( f.getName(), f.getType() ));
+                for ( Map.Entry<String, Type> f : type.getFields().entrySet() ) {
+                    this.currentScope.define(new VariableSymbol( f.getKey(), f.getValue() ));
                 }
                 LOG.trace(".. PUSHED, scope name {} with symbols {}", this.currentName.peek(), this.currentScope.getSymbols());
             } else {
@@ -130,7 +130,7 @@ public class ParserHelper {
     }
 
     public void validateVariable( ParserRuleContext ctx, List<String> qn, String name ) {
-        if( eventsManager != null ) {
+        if( eventsManager != null && !dynamicResolution ) {
             if( this.currentScope.getChildScopes().get( name ) == null && this.currentScope.resolve( name ) == null ) {
                 // report error
                 FEELEventListenersManager.notifyListeners( eventsManager , () -> {
@@ -144,6 +144,14 @@ public class ParserHelper {
                 );
             }
         }
+    }
+
+    public void disableDynamicResolution() {
+        this.dynamicResolution = false;
+    }
+
+    public void enableDynamicResolution() {
+        this.dynamicResolution = true;
     }
     
     public void defineVariable(ParserRuleContext ctx) {

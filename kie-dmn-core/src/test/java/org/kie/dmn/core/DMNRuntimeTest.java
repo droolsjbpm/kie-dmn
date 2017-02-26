@@ -286,14 +286,14 @@ public class DMNRuntimeTest {
         DMNRuntime runtime = DMNRuntimeUtil.createRuntime( "BoxedContext.dmn", this.getClass() );
         DMNModel dmnModel = runtime.getModel( "http://www.trisotech.com/dmn/definitions/_0de36357-fec0-4b4e-b7f1-382d381e06e9", "Dessin 1" );
         assertThat( dmnModel, notNullValue() );
-        assertThat( dmnModel.getMessages().toString(), dmnModel.hasErrors(), is( false ) );
+        assertThat( formatMessages( dmnModel.getMessages() ) , dmnModel.hasErrors(), is( false ) );
 
         DMNContext context = DMNFactory.newContext();
         context.set( "a", 10 );
         context.set( "b", 5 );
 
         DMNResult dmnResult = runtime.evaluateAll( dmnModel, context );
-        assertThat( dmnResult.hasErrors(), is( false ) );
+        assertThat( formatMessages( dmnResult.getMessages() ), dmnResult.hasErrors(), is( false ) );
         assertThat( (Map<String, Object>) dmnResult.getContext().get( "Math" ), hasEntry( "Sum", BigDecimal.valueOf( 15 ) ) );
         assertThat( (Map<String, Object>) dmnResult.getContext().get( "Math" ), hasEntry( "Product", BigDecimal.valueOf( 50 ) ) );
     }

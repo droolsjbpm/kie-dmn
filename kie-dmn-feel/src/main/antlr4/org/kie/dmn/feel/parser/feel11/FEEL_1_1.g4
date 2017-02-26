@@ -238,8 +238,8 @@ powerExpression
 
 filterPathExpression
     :   unaryExpression
-    |   filterPathExpression '[' filter=expression ']'
-    |   filterPathExpression '.' qualifiedName
+    |   filterPathExpression '[' {helper.enableDynamicResolution();} filter=expression {helper.disableDynamicResolution();} ']'
+    |   filterPathExpression '.' {helper.enableDynamicResolution();} qualifiedName {helper.disableDynamicResolution();}
     ;
 
 unaryExpression

@@ -6,20 +6,24 @@ import org.kie.dmn.feel.lang.Type;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * A map-based type descriptor
+ */
 public class MapBackedType
         implements CompositeType {
 
     public static final String TYPE_NAME = "__TYPE_NAME__";
 
-    private String            name       = "[anonymous]";
-    private Map<String, Type> properties = new LinkedHashMap<>();
+    private String            name   = "[anonymous]";
+    private Map<String, Type> fields = new LinkedHashMap<>();
 
     public MapBackedType() {
     }
 
-    /**
-     * Utility constructor by reflection over key-value pairs.
-     */
+    public MapBackedType(String typeName) {
+        this.name = typeName;
+    }
+
     public MapBackedType(String typeName, Map<String, Type> fields) {
         this.name = typeName;
         fields.putAll( fields );
@@ -30,23 +34,13 @@ public class MapBackedType
         return this.name;
     }
 
-    @Override
-    public Object fromString(String value) {
-        return null;
-    }
-
-    @Override
-    public String toString(Object value) {
-        return null;
-    }
-
     public MapBackedType addField(String name, Type type) {
-        properties.put( name, type );
+        fields.put( name, type );
         return this;
     }
 
     @Override
     public Map<String, Type> getFields() {
-        return properties;
+        return fields;
     }
 }

@@ -39,7 +39,7 @@ public class FEELErrorMessagesTest {
         feel.addListener( fel );
 
         CompilerContext ctx = feel.newCompilerContext();
-//        ctx.addInputVariableType( "a variable name", BuiltInType.UNKNOWN );
+//        ctx.addInputVariableType( "a variable name", BuiltInType.STRING );
         CompiledExpression ce = feel.compile( "a variable name", ctx );
 
         ArgumentCaptor<FEELEvent> captor = ArgumentCaptor.forClass( FEELEvent.class );

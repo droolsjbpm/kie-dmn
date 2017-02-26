@@ -17,7 +17,7 @@ public class JavaBackedTypeTest {
     @Test
     public void testPerson() {
         CompositeType personType = (CompositeType) JavaBackedType.of( Person.class );
-        Set<String> personProperties = personType.getProperties().keySet();
+        Set<String> personProperties = personType.getFields().keySet();
         
         assertThat( personProperties,  hasItem("home address") );
         assertThat( personProperties,  hasItem("address") );
@@ -61,7 +61,7 @@ public class JavaBackedTypeTest {
     @Test
     public void testMyPojoNoMethodAnn() {
         CompositeType personType = (CompositeType) JavaBackedType.of( MyPojoNoMethodAnn.class );
-        Set<String> personProperties = personType.getProperties().keySet();
+        Set<String> personProperties = personType.getFields().keySet();
         
         assertThat( personProperties,  hasItem("a") );
         assertThat( personProperties,  hasItem("b") );

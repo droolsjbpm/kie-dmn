@@ -32,7 +32,7 @@ import org.kie.dmn.core.ast.*;
 import org.kie.dmn.core.impl.BaseDMNTypeImpl;
 import org.kie.dmn.core.impl.CompositeTypeImpl;
 import org.kie.dmn.core.impl.DMNModelImpl;
-import org.kie.dmn.core.impl.FeelTypeImpl;
+import org.kie.dmn.core.impl.SimpleTypeImpl;
 import org.kie.dmn.feel.lang.Type;
 import org.kie.dmn.feel.lang.types.BuiltInType;
 import org.kie.dmn.feel.model.v1_1.*;
@@ -54,10 +54,12 @@ public class DMNCompilerImpl
     private static final Logger logger = LoggerFactory.getLogger( DMNCompilerImpl.class );
     private final DMNEvaluatorCompiler evaluatorCompiler;
     private final DMNFEELHelper feel;
+    private final DMNTypeRegistry types;
 
     public DMNCompilerImpl() {
         this.feel = new DMNFEELHelper();
         this.evaluatorCompiler = new DMNEvaluatorCompiler( this, feel );
+        this.types = new DMNTypeRegistry();
     }
 
     @Override
@@ -91,7 +93,7 @@ public class DMNCompilerImpl
     private void processItemDefinitions(DMNCompilerContext ctx, DMNFEELHelper feel, DMNModelImpl model, Definitions dmndefs) {
         for ( ItemDefinition id : dmndefs.getItemDefinition() ) {
             ItemDefNodeImpl idn = new ItemDefNodeImpl( id );
-            DMNType type = buildTypeDef( ctx, feel, model, idn, id );
+            DMNType type = buildTypeDef( ctx, feel, model, idn, id, true );
             idn.setType( type );
             model.addItemDefinition( idn );
         }
@@ -110,7 +112,6 @@ public class DMNCompilerImpl
                 DMNType type = resolveTypeRef( model, idn, e, input.getVariable(), input.getVariable().getTypeRef() );
                 idn.setType( type );
                 model.addInput( idn );
-                model.getTypeRegistry().put( input.getVariable().getTypeRef(), type );
             } else if ( e instanceof Decision ) {
                 Decision decision = (Decision) e;
                 DecisionNodeImpl dn = new DecisionNodeImpl( decision );
@@ -222,28 +223,35 @@ public class DMNCompilerImpl
         return href.contains( "#" ) ? href.substring( href.indexOf( '#' ) + 1 ) : href;
     }
 
-    private DMNType buildTypeDef(DMNCompilerContext ctx, DMNFEELHelper feel, DMNModelImpl dmnModel, DMNNode node, ItemDefinition itemDef) {
+    private DMNType buildTypeDef(DMNCompilerContext ctx, DMNFEELHelper feel, DMNModelImpl dmnModel, DMNNode node, ItemDefinition itemDef, boolean topLevel) {
         BaseDMNTypeImpl type = null;
         if ( itemDef.getTypeRef() != null ) {
             // this is a reference to an existing type, so resolve the reference
             type = (BaseDMNTypeImpl) resolveTypeRef( dmnModel, node, itemDef, itemDef, itemDef.getTypeRef() );
             if ( type != null ) {
-                // we have to clone this type definition into a new one
-                type = type.clone();
-
                 UnaryTests allowedValuesStr = itemDef.getAllowedValues();
-                if ( allowedValuesStr != null ) {
-                    List<UnaryTest> av = feel.evaluateUnaryTests(
-                            ctx,
-                            allowedValuesStr.getText(),
-                            dmnModel,
-                            itemDef,
-                            evaluatorCompiler.createErrorMsg( node, itemDef.getName(), itemDef, 0, allowedValuesStr.getText() )
-                    );
-                    type.setAllowedValues( av );
-                }
-                if ( itemDef.isIsCollection() ) {
-                    type.setCollection( itemDef.isIsCollection() );
+                if( allowedValuesStr != null || itemDef.isIsCollection() != type.isCollection() ) {
+                    // we have to clone this type definition into a new one
+                    type = type.clone();
+
+                    if ( allowedValuesStr != null ) {
+                        List<UnaryTest> av = feel.evaluateUnaryTests(
+                                ctx,
+                                allowedValuesStr.getText(),
+                                dmnModel,
+                                itemDef,
+                                evaluatorCompiler.createErrorMsg( node, itemDef.getName(), itemDef, 0, allowedValuesStr.getText() )
+                        );
+                        type.setAllowedValues( av );
+                    }
+                    if ( itemDef.isIsCollection() ) {
+                        type.setCollection( itemDef.isIsCollection() );
+                    }
+                    type.setNamespace( dmnModel.getNamespace() );
+                    type.setName( itemDef.getName() );
+                    if( topLevel ) {
+                        types.registerType( type );
+                    }
                 }
             } else {
                 String message = "Unknown type reference '" + itemDef.getTypeRef() + "' on node '" + node.getName() + "'";
@@ -252,70 +260,55 @@ public class DMNCompilerImpl
             }
         } else {
             // this is a composite type
-            CompositeTypeImpl compType = new CompositeTypeImpl( itemDef.getName(), itemDef.getId(), itemDef.isIsCollection() );
+            CompositeTypeImpl compType = new CompositeTypeImpl( dmnModel.getNamespace(), itemDef.getName(), itemDef.getId(), itemDef.isIsCollection() );
             for ( ItemDefinition fieldDef : itemDef.getItemComponent() ) {
-                DMNType fieldType = buildTypeDef( ctx, feel, dmnModel, node, fieldDef );
-                compType.getFields().put( fieldDef.getName(), fieldType );
+                DMNType fieldType = buildTypeDef( ctx, feel, dmnModel, node, fieldDef, false );
+                compType.addField( fieldDef.getName(), fieldType );
             }
             type = compType;
+            if( topLevel ) {
+                types.registerType( type );
+            }
         }
         return type;
     }
 
     public DMNType resolveTypeRef(DMNModelImpl dmnModel, DMNNode node, NamedElement model, DMNModelInstrumentedBase localElement, QName typeRef) {
         if ( typeRef != null ) {
-            String prefix = typeRef.getPrefix();
-            String namespace = localElement.getNamespaceURI( prefix );
-            if ( namespace != null && DMNModelInstrumentedBase.URI_FEEL.equals( namespace ) ) {
-                Type feelType = BuiltInType.determineTypeFromName( typeRef.getLocalPart() );
-                if ( feelType == BuiltInType.CONTEXT || feelType == BuiltInType.UNKNOWN ) {
-                    if ( model instanceof Decision && ((Decision) model).getExpression() instanceof DecisionTable ) {
-                        DecisionTable dt = (DecisionTable) ((Decision) model).getExpression();
-                        if ( dt.getOutput().size() > 1 ) {
-                            CompositeTypeImpl compType = new CompositeTypeImpl( "__t" + model.getName(), model.getId() );
-                            for ( OutputClause oc : dt.getOutput() ) {
-                                DMNType fieldType = resolveTypeRef( dmnModel, node, model, oc, oc.getTypeRef() );
-                                compType.getFields().put( oc.getName(), fieldType );
-                            }
-                            return compType;
-                        } else if ( dt.getOutput().size() == 1 ) {
-                            return resolveTypeRef( dmnModel, node, model, dt.getOutput().get( 0 ), dt.getOutput().get( 0 ).getTypeRef() );
+            String namespace = getNamespace( localElement, typeRef );
+
+            DMNType type = types.resolveType( namespace, typeRef.getLocalPart() );
+            if( type == null && DMNModelInstrumentedBase.URI_FEEL.equals( namespace ) ) {
+                if ( model instanceof Decision && ((Decision) model).getExpression() instanceof DecisionTable ) {
+                    DecisionTable dt = (DecisionTable) ((Decision) model).getExpression();
+                    if ( dt.getOutput().size() > 1 ) {
+                        // implicitly define a type for the decision table result
+                        CompositeTypeImpl compType = new CompositeTypeImpl( dmnModel.getNamespace(), model.getName()+"_Type", model.getId(), dt.getHitPolicy().isMultiHit() );
+                        for ( OutputClause oc : dt.getOutput() ) {
+                            DMNType fieldType = resolveTypeRef( dmnModel, node, model, oc, oc.getTypeRef() );
+                            compType.addField( oc.getName(), fieldType );
                         }
+                        types.registerType( compType );
+                        return compType;
+                    } else if ( dt.getOutput().size() == 1 ) {
+                        return resolveTypeRef( dmnModel, node, model, dt.getOutput().get( 0 ), dt.getOutput().get( 0 ).getTypeRef() );
                     }
                 }
-                return new FeelTypeImpl( model.getName(), model.getId(), feelType, false, null );
-            } else if ( dmnModel.getNamespace() != null && namespace != null && dmnModel.getNamespace().equals( namespace ) ) {
-                // locally defined type
-                List<ItemDefNode> itemDefs = dmnModel.getItemDefinitions().stream()
-                        .filter( id -> id.getName() != null && id.getName().equals( typeRef.getLocalPart() ) )
-                        .collect( toList() );
-                if ( itemDefs.size() == 1 ) {
-                    return itemDefs.get( 0 ).getType();
-                } else if ( itemDefs.isEmpty() ) {
-                    if ( model.getName() != null && node.getName() != null && model.getName().equals( node.getName() ) ) {
-                        logger.error( "No '" + typeRef.toString() + "' type definition found for node '" + node.getName() + "'" );
-                    } else {
-                        logger.error( "No '" + typeRef.toString() + "' type definition found for element '" + model.getName() + "' on node '" + node.getName() + "'" );
-                    }
-                } else {
-                    if ( model.getName() != null && node.getName() != null && model.getName().equals( node.getName() ) ) {
-                        logger.error( "Multiple types found for type reference '" + typeRef.toString() + "' on node '" + node.getName() + "'" );
-                    } else {
-                        logger.error( "Multiple types found for type reference '" + typeRef.toString() + "' on element '" + model.getName() + "' on node '" + node.getName() + "'" );
-                    }
-                }
-            } else {
+            } else if( type == null ) {
                 if ( model.getName() != null && node.getName() != null && model.getName().equals( node.getName() ) ) {
-                    logger.error( "Unknown namespace for type reference prefix '" + prefix + "' on node '" + node.getName() + "'" );
+                    logger.error( "No '" + typeRef.toString() + "' type definition found for node '" + node.getName() + "'" );
                 } else {
-                    logger.error( "Unknown namespace for type reference prefix '" + prefix + "' on element '" + model.getName() + "' on node '" + node.getName() + "'" );
+                    logger.error( "No '" + typeRef.toString() + "' type definition found for element '" + model.getName() + "' on node '" + node.getName() + "'" );
                 }
             }
-            return null;
+            return type;
         }
-        return new FeelTypeImpl( model.getName(), model.getId(), BuiltInType.UNKNOWN, false, null );
+        return types.resolveType( DMNModelInstrumentedBase.URI_FEEL, BuiltInType.UNKNOWN.getName() );
     }
 
-
+    private String getNamespace(DMNModelInstrumentedBase localElement, QName typeRef) {
+        String prefix = typeRef.getPrefix();
+        return localElement.getNamespaceURI( prefix );
+    }
 
 }
