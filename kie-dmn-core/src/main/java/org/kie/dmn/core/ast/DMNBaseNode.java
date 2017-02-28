@@ -46,6 +46,14 @@ public abstract class DMNBaseNode
         return source != null ? source.getName() : null;
     }
 
+    public String getIdentifierString() {
+        String identifier = "[unnamed]";
+        if( source != null ) {
+            identifier = source.getName() != null ? source.getName() : source.getId();
+        }
+        return identifier;
+    }
+
     public Map<String, DMNNode> getDependencies() {
         return dependencies;
     }
