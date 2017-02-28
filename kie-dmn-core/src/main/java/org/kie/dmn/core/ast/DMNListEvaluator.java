@@ -37,10 +37,10 @@ public class DMNListEvaluator
 
     private final String                           name;
     private final String                           nodeId;
-    private final org.kie.dmn.feel.model.v1_1.List listDef;
+    private final org.kie.dmn.model.v1_1.List listDef;
     private final List<DMNExpressionEvaluator> elements = new ArrayList<>();
 
-    public DMNListEvaluator(String name, String nodeId, org.kie.dmn.feel.model.v1_1.List listDef) {
+    public DMNListEvaluator(String name, String nodeId, org.kie.dmn.model.v1_1.List listDef) {
         this.name = name;
         this.nodeId = nodeId;
         this.listDef = listDef;

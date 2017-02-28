@@ -26,8 +26,8 @@ import org.kie.dmn.api.core.ast.InputDataNode;
 import org.kie.dmn.api.core.ast.ItemDefNode;
 import org.kie.dmn.api.feel.runtime.events.FEELEvent;
 import org.kie.dmn.core.ast.*;
-import org.kie.dmn.feel.model.v1_1.BusinessKnowledgeModel;
-import org.kie.dmn.feel.model.v1_1.Definitions;
+import org.kie.dmn.model.v1_1.BusinessKnowledgeModel;
+import org.kie.dmn.model.v1_1.Definitions;
 
 import javax.xml.namespace.QName;
 import java.util.*;
