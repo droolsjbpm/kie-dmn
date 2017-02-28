@@ -48,7 +48,7 @@ public class DMNEvaluatorCompiler {
             if ( expression != null ) {
                 model.addMessage( DMNMessage.Severity.ERROR, "Expression type '" + expression.getClass().getSimpleName() + "' not supported in node '" + node.getId() + "'", node.getId() );
             } else {
-                model.addMessage( DMNMessage.Severity.ERROR, "No expression defined for node '" + node.getId() + "'", node.getId() );
+                model.addMessage( DMNMessage.Severity.ERROR, "No expression defined for node '" + node.getName() + "'", node.getId() );
             }
         }
         return null;
