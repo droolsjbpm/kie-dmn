@@ -54,6 +54,10 @@ public abstract class DMNBaseNode
         return identifier;
     }
 
+    public DMNElement getSource() {
+        return source;
+    }
+
     public Map<String, DMNNode> getDependencies() {
         return dependencies;
     }

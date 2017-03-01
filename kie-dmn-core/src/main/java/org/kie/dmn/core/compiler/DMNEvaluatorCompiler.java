@@ -46,9 +46,9 @@ public class DMNEvaluatorCompiler {
             return compileInvocation( ctx, model, node, (Invocation) expression );
         } else {
             if ( expression != null ) {
-                model.addMessage( DMNMessage.Severity.ERROR, "Expression type '" + expression.getClass().getSimpleName() + "' not supported in node '" + node.getIdentifierString() + "'", node.getId() );
+                model.addMessage( DMNMessage.Severity.ERROR, "Expression type '" + expression.getClass().getSimpleName() + "' not supported in node '" + node.getIdentifierString() + "'", node.getSource() );
             } else {
-                model.addMessage( DMNMessage.Severity.ERROR, "No expression defined for node '" + node.getIdentifierString() + "'", node.getId() );
+                model.addMessage( DMNMessage.Severity.ERROR, "No expression defined for node '" + node.getIdentifierString() + "'", node.getSource() );
             }
         }
         return null;
@@ -58,7 +58,7 @@ public class DMNEvaluatorCompiler {
         Invocation invocation = expression;
         // expression must be a literal text with the name of the function
         String functionName = ((LiteralExpression) invocation.getExpression()).getText();
-        DMNInvocationEvaluator invEval = new DMNInvocationEvaluator( node.getName(), node.getId(), functionName, invocation );
+        DMNInvocationEvaluator invEval = new DMNInvocationEvaluator( node.getName(), node.getSource(), functionName, invocation );
         for ( Binding binding : invocation.getBinding() ) {
             invEval.addParameter(
                     binding.getParameter().getName(),
@@ -70,7 +70,7 @@ public class DMNEvaluatorCompiler {
 
     private DMNExpressionEvaluator compileRelation(DMNCompilerContext ctx, DMNModelImpl model, DMNBaseNode node, String relationName, Relation expression) {
         Relation relationDef = expression;
-        DMNRelationEvaluator relationEval = new DMNRelationEvaluator( node.getName(), node.getId(), relationDef );
+        DMNRelationEvaluator relationEval = new DMNRelationEvaluator( node.getName(), node.getSource(), relationDef );
         for ( InformationItem col : relationDef.getColumn() ) {
             relationEval.addColumn( col.getName() );
         }
@@ -86,7 +86,7 @@ public class DMNEvaluatorCompiler {
 
     private DMNExpressionEvaluator compileList(DMNCompilerContext ctx, DMNModelImpl model, DMNBaseNode node, String listName, org.kie.dmn.feel.model.v1_1.List expression) {
         org.kie.dmn.feel.model.v1_1.List listDef = expression;
-        DMNListEvaluator listEval = new DMNListEvaluator( node.getName(), node.getId(), listDef );
+        DMNListEvaluator listEval = new DMNListEvaluator( node.getName(), node.getSource(), listDef );
         for ( Expression expr : listDef.getExpression() ) {
             listEval.addElement( compileExpression( ctx, model, node, listName, expr ) );
         }
