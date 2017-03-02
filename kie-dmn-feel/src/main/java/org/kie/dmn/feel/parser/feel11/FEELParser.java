@@ -49,26 +49,7 @@ public class FEELParser {
     }
 
     public static boolean isVariableNameValid( String source ) {
-        if( source == null || source.isEmpty() ) {
-            return false;
-        }
-        ANTLRInputStream input = new ANTLRInputStream(source);
-        FEEL_1_1Lexer lexer = new FEEL_1_1Lexer( input );
-        CommonTokenStream tokens = new CommonTokenStream( lexer );
-        FEEL_1_1Parser parser = new FEEL_1_1Parser( tokens );
-        parser.setHelper( new ParserHelper() );
-        parser.setErrorHandler( new FEELErrorHandler() );
-        FEELParserErrorListener errorChecker = new FEELParserErrorListener( null );
-        parser.removeErrorListeners(); // removes the error listener that prints to the console
-        parser.addErrorListener( errorChecker );
-        FEEL_1_1Parser.NameDefinitionContext nameDef = parser.nameDefinition();
-
-        if( ! errorChecker.hasErrors() &&
-            nameDef != null &&
-            source.trim().equals( parser.getHelper().getOriginalText( nameDef ) ) ) {
-            return true;
-        }
-        return false;
+        return checkVariableName( source ).isEmpty();
     }
 
     public static List<FEELEvent> checkVariableName( String source ) {
