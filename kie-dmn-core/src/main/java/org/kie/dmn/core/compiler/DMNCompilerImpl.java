@@ -101,7 +101,7 @@ public class DMNCompilerImpl
             if ( e instanceof InputData ) {
                 InputData input = (InputData) e;
                 String variableName = input.getVariable() != null ? input.getVariable().getName() : null;
-                checkVariableName( model, input, variableName );
+                DMNCompilerHelper.checkVariableName( model, input, variableName );
                 InputDataNodeImpl idn = new InputDataNodeImpl( input );
                 DMNType type = resolveTypeRef( model, idn, e, input.getVariable(), input.getVariable().getTypeRef() );
                 idn.setType( type );
@@ -110,7 +110,7 @@ public class DMNCompilerImpl
                 Decision decision = (Decision) e;
                 DecisionNodeImpl dn = new DecisionNodeImpl( decision );
                 DMNType type = null;
-                checkVariableName( model, decision, decision.getVariable() != null ? decision.getVariable().getName() : null );
+                DMNCompilerHelper.checkVariableName( model, decision, decision.getVariable() != null ? decision.getVariable().getName() : null );
                 if ( decision.getVariable() != null && decision.getVariable().getTypeRef() != null ) {
                     type = resolveTypeRef( model, dn, decision, decision.getVariable(), decision.getVariable().getTypeRef() );
                 } else {
@@ -122,7 +122,7 @@ public class DMNCompilerImpl
                 BusinessKnowledgeModel bkm = (BusinessKnowledgeModel) e;
                 BusinessKnowledgeModelNodeImpl bkmn = new BusinessKnowledgeModelNodeImpl( bkm );
                 DMNType type = null;
-                checkVariableName( model, bkm, bkm.getVariable() != null ? bkm.getVariable().getName() : null );
+                DMNCompilerHelper.checkVariableName( model, bkm, bkm.getVariable() != null ? bkm.getVariable().getName() : null );
                 if ( bkm.getVariable() != null && bkm.getVariable().getTypeRef() != null ) {
                     type = resolveTypeRef( model, bkmn, bkm, bkm.getVariable(), bkm.getVariable().getTypeRef() );
                 } else {
@@ -181,17 +181,6 @@ public class DMNCompilerImpl
                 ctx.exitFrame();
             }
         }
-    }
-
-    private boolean checkVariableName(DMNModelImpl model, NamedElement element, String variableName) {
-        List<FEELEvent> errors = FEELParser.checkVariableName( variableName );
-        if ( ! errors.isEmpty() ) {
-            String errorMsg = "Invalid name '" + variableName + "': " + errors.get( 0 ).getMessage();
-            logger.error( errorMsg );
-            model.addMessage( DMNMessage.Severity.ERROR, errorMsg, element, errors.get( 0 ) );
-            return false;
-        }
-        return true;
     }
 
     private void linkRequirements(DMNModelImpl model, DMNBaseNode node) {

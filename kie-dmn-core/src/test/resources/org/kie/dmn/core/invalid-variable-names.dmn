@@ -24,9 +24,14 @@
 		<informationRequirement>
 			<requiredInput href="#i_FullName"/>
 		</informationRequirement>
-		<literalExpression>
-			<text>"Hello " + Full Name</text>
-		</literalExpression>
+		<context>
+			<contextEntry>
+				<variable name="# foo bar"/>
+				<literalExpression>
+					<text>"Hello " + Full Name</text>
+				</literalExpression>
+			</contextEntry>
+		</context>
 	</decision>
 	<inputData name="Full Name" id="i_FullName">
 		<variable name="Full Name" typeRef="feel:string"/>
