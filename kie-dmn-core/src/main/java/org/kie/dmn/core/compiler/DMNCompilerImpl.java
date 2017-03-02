@@ -188,7 +188,7 @@ public class DMNCompilerImpl
         if ( ! errors.isEmpty() ) {
             String errorMsg = "Invalid name '" + variableName + "': " + errors.get( 0 ).getMessage();
             logger.error( errorMsg );
-            model.addMessage( DMNMessage.Severity.ERROR, errorMsg, element );
+            model.addMessage( DMNMessage.Severity.ERROR, errorMsg, element, errors.get( 0 ) );
             return false;
         }
         return true;
