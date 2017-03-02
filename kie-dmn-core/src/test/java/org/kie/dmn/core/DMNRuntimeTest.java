@@ -727,6 +727,15 @@ public class DMNRuntimeTest {
         assertThat( result.get( "How long" ), is( "Longer than a year" ) );
     }
 
+    @Test
+    public void testInvalidVariableNames() {
+        DMNRuntime runtime = DMNRuntimeUtil.createRuntime( "invalid-variable-names.dmn", this.getClass() );
+        DMNModel dmnModel = runtime.getModel( "https://github.com/droolsjbpm/kie-dmn", "0001-input-data-string" );
+        assertThat( dmnModel, notNullValue() );
+        assertThat( dmnModel.hasErrors(), is(true) );
+        assertThat( dmnModel.getMessages().size(), is(3) );
+    }
+
     private String formatMessages(List<DMNMessage> messages) {
         return messages.stream().map( m -> m.toString() ).collect( Collectors.joining( "\n" ) );
     }
