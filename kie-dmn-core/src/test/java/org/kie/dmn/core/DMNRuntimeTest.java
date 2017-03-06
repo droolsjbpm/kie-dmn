@@ -816,6 +816,39 @@ public class DMNRuntimeTest {
         assertThat( result.get( "Decision Logic 1" ), is( "Positive number" ) );
     }
 
+    @Test
+    public void testLoan_Recommendation2() {
+        DMNRuntime runtime = DMNRuntimeUtil.createRuntime( "Loan_Recommendation2.dmn", this.getClass() );
+        DMNModel dmnModel = runtime.getModel( "http://www.trisotech.com/definitions/_35c7339b-b868-43da-8f06-eb481708c73c", "Loan Recommendation2" );
+        assertThat( dmnModel, notNullValue() );
+        assertThat( formatMessages( dmnModel.getMessages() ), dmnModel.hasErrors(), is( false ) );
+
+        Map<String,Object> loan = new HashMap<>(  );
+        loan.put( "Amount", 100000);
+        loan.put( "Rate", 2.39);
+        loan.put( "Term", 60);
+
+        Map<String,Object> borrower = new HashMap<>(  );
+        borrower.put( "Age", 39);
+        borrower.put( "EmploymentStatus", "Employed");
+        borrower.put( "YearsAtCurrentEmployer", 10);
+        borrower.put( "TotalAnnualIncome", 150000);
+        borrower.put( "NonSalaryIncome", 0);
+        borrower.put( "MonthlyDebtPmtAmt", 2000);
+        borrower.put( "LiquidAssetsAmt", 50000);
+
+        DMNContext context = runtime.newContext();
+        context.set( "Credit Score", null );
+        context.set( "Appraised Value", 200000 );
+        context.set( "Loan", loan );
+        context.set( "Borrower", borrower );
+
+        DMNResult dmnResult = runtime.evaluateAll( dmnModel, context );
+        assertThat( formatMessages( dmnResult.getMessages() ), dmnResult.hasErrors(), is( false ) );
+        DMNContext result = dmnResult.getContext();
+        assertThat( result.get( "Loan Recommendation" ), is( "Declined" ) );
+    }
+
     private String formatMessages(List<DMNMessage> messages) {
         return messages.stream().map( m -> m.toString() ).collect( Collectors.joining( "\n" ) );
     }
