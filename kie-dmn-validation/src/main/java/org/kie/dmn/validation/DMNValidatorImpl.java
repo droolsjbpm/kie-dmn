@@ -46,9 +46,11 @@ import org.kie.api.event.rule.DefaultRuleRuntimeEventListener;
 import org.kie.api.event.rule.ObjectInsertedEvent;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.StatelessKieSession;
+import org.kie.dmn.api.core.DMNMessage;
+import org.kie.dmn.core.impl.DMNMessageImpl;
+import org.kie.dmn.core.util.MsgUtil;
 import org.kie.dmn.model.v1_1.DMNModelInstrumentedBase;
 import org.kie.dmn.model.v1_1.Definitions;
-import org.kie.dmn.validation.ValidationMsg.Severity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -72,7 +74,7 @@ public class DMNValidatorImpl implements DMNValidator {
     /**
      * Collect at init time the runtime issues which prevented to build the `kieContainer` correctly.
      */
-    private List<ValidationMsg> failedInitMsg;
+    private List<DMNMessage> failedInitMsg;
     
     public DMNValidatorImpl() {
         KieServices ks = KieServices.Factory.get();
@@ -83,7 +85,7 @@ public class DMNValidatorImpl implements DMNValidator {
             kfs.write("src/main/resources/rules.drl", IoUtils.readBytesFromInputStream( DMNValidatorImpl.class.getResourceAsStream("/rules.drl") ));
         } catch (IOException e) {
             LOG.error("Unable to read embedded DMN validation rule file.", e);
-            failedInitMsg.add(new ValidationMsg(Severity.ERROR, Msg.FAILED_VALIDATOR, e.getMessage()));
+            failedInitMsg.add(new DMNMessageImpl(DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.FAILED_VALIDATOR, e.getMessage()), null, e));
         }
         KieBuilder kieBuilder = ks.newKieBuilder(kfs).buildAll();
         Results results = kieBuilder.getResults();
@@ -98,7 +100,7 @@ public class DMNValidatorImpl implements DMNValidator {
         if (results.hasMessages(new Message.Level[]{Message.Level.ERROR})) {
             LOG.error("Errors while compiling embedded DMN validation rules.");
             results.getMessages().stream()
-                .map(m -> new ValidationMsg( Severity.ERROR, Msg.FAILED_VALIDATOR, m ))
+                .map(m -> new DMNMessageImpl(DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.FAILED_VALIDATOR, m.toString()), null ))
                 .forEach(vm -> failedInitMsg.add(vm));
             this.kieContainer = Optional.empty();
         } else {
@@ -111,38 +113,44 @@ public class DMNValidatorImpl implements DMNValidator {
     }
 
     @Override
-    public List<ValidationMsg> validateSchema(File xmlFile) {
-        List<ValidationMsg> problems = new ArrayList<>();
+    public List<DMNMessage> validateSchema(File xmlFile) {
+        List<DMNMessage> problems = new ArrayList<>();
         Source s = new StreamSource(xmlFile);
         try {
             schema.newValidator().validate(s);
         } catch (SAXException | IOException e) {
-            problems.add(new ValidationMsg(ValidationMsg.Severity.ERROR, Msg.FAILED_XML_VALIDATION, e));
+            problems.add(new DMNMessageImpl(DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.FAILED_XML_VALIDATION), null, e));
         }
         // TODO detect if the XSD is not provided through schemaLocation, and validate against embedded
         return problems;
     }
     
     @Override
-    public List<ValidationMsg> validateModel(Definitions dmnModel) {
+    public List<DMNMessage> validateModel(Definitions dmnModel) {
         if (!kieContainer.isPresent()) {
             return failedInitMsg;
         }
         
         StatelessKieSession kieSession = kieContainer.get().newStatelessKieSession();
         
-        List<ValidationMsg> problems = new ArrayList<>();
+        List<DMNMessage> problems = new ArrayList<>();
         
         kieSession.addEventListener(new DefaultRuleRuntimeEventListener() {
             @Override
             public void objectInserted(ObjectInsertedEvent event) {
-                if ( event.getObject() instanceof ValidationMsg ) {
-                    problems.add((ValidationMsg) event.getObject());
+                if ( event.getObject() instanceof DMNMessage ) {
+                    problems.add((DMNMessage) event.getObject());
                 }
             }
         });
         
         kieSession.execute(allChildren(dmnModel).collect(toList()));
+        
+        if ( LOG.isDebugEnabled() ) {
+            for ( DMNMessage m : problems ) {
+                LOG.debug("{}", m);
+            }
+        }
         
         return problems;
     }

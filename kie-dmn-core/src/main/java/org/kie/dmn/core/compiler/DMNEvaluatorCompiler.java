@@ -10,6 +10,7 @@ import org.kie.dmn.core.ast.*;
 import org.kie.dmn.core.impl.DMNMessageTypeImpl;
 import org.kie.dmn.core.impl.DMNModelImpl;
 import org.kie.dmn.core.util.Msg;
+import org.kie.dmn.core.util.MsgUtil;
 import org.kie.dmn.feel.lang.CompiledExpression;
 import org.kie.dmn.feel.runtime.UnaryTest;
 import org.kie.dmn.feel.runtime.decisiontables.*;
@@ -48,9 +49,9 @@ public class DMNEvaluatorCompiler {
             return compileInvocation( ctx, model, node, (Invocation) expression );
         } else {
             if ( expression != null ) {
-                model.addMessage( DMNMessage.Severity.ERROR, Msg.createMessage(Msg.EXPR_TYPE_NOT_SUPPORTED_IN_NODE, expression.getClass().getSimpleName(), node.getIdentifierString() ), node.getSource() );
+                model.addMessage( DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.EXPR_TYPE_NOT_SUPPORTED_IN_NODE, expression.getClass().getSimpleName(), node.getIdentifierString() ), node.getSource() );
             } else {
-                model.addMessage( DMNMessage.Severity.ERROR, Msg.createMessage(Msg.NO_EXPR_DEF_FOR_NODE, node.getIdentifierString() ), node.getSource() );
+                model.addMessage( DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.NO_EXPR_DEF_FOR_NODE, node.getIdentifierString() ), node.getSource() );
             }
         }
         return null;
@@ -237,10 +238,10 @@ public class DMNEvaluatorCompiler {
                                                                                         createErrorMsg( node, exprName, expression, 0, exprText ) );
                     evaluator = new DMNLiteralExpressionEvaluator( compiledExpression );
                 } catch ( Throwable e ) {
-                    model.addMessage( DMNMessage.Severity.ERROR, Msg.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_FOR_NAME_ON_NODE, exprName, expression, node.getIdentifierString()), expression, e );
+                    model.addMessage( DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_FOR_NAME_ON_NODE, exprName, expression, node.getIdentifierString()), expression, e );
                 }
             } else {
-                model.addMessage( DMNMessage.Severity.ERROR, Msg.createMessage(Msg.NO_EXPR_DEF_FOR_NAME_ON_NODE, exprName, node.getIdentifierString() ), expression );
+                model.addMessage( DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.NO_EXPR_DEF_FOR_NAME_ON_NODE, exprName, node.getIdentifierString() ), expression );
             }
         }
         return evaluator;
@@ -256,17 +257,17 @@ public class DMNEvaluatorCompiler {
     public DMNMessageTypeImpl createErrorMsg(DMNNode node, String elementName, DMNElement element, int index, String expression) {
         DMNMessageTypeImpl errorMsg;
         if ( element instanceof InputClause ) {
-            errorMsg = Msg.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_INPUT_CLAUSE_IDX, expression, elementName, index); 
+            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_INPUT_CLAUSE_IDX, expression, elementName, index); 
         } else if ( element instanceof OutputClause ) {
-            errorMsg = Msg.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_OUTPUT_CLAUSE_IDX, expression, elementName, index); 
+            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_OUTPUT_CLAUSE_IDX, expression, elementName, index); 
         } else if ( element instanceof ItemDefinition ) {
-            errorMsg = Msg.createMessage(Msg.ERR_COMPILING_ALLOWED_VALUES_LIST_ON_ITEM_DEF, expression, elementName);
+            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_ALLOWED_VALUES_LIST_ON_ITEM_DEF, expression, elementName);
         } else if ( element instanceof DecisionRule ) {
-            errorMsg = Msg.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_RULE_IDX, expression, elementName, index);
+            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_RULE_IDX, expression, elementName, index);
         } else if ( element instanceof LiteralExpression ) {
-            errorMsg = Msg.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_FOR_NAME_ON_NODE, expression, elementName, ((DMNBaseNode)node).getIdentifierString() );
+            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_FOR_NAME_ON_NODE, expression, elementName, ((DMNBaseNode)node).getIdentifierString() );
         } else {
-            errorMsg = Msg.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT, expression, elementName);
+            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT, expression, elementName);
         }
         return errorMsg;
     }

@@ -17,32 +17,34 @@
 package org.kie.dmn.core.impl;
 
 import org.kie.dmn.api.core.DMNMessage;
+import org.kie.dmn.api.core.DMNMessageTypeId;
 import org.kie.dmn.api.feel.runtime.events.FEELEvent;
 import org.kie.dmn.model.v1_1.DMNElement;
+import org.kie.dmn.model.v1_1.DMNModelInstrumentedBase;
 
 public class DMNMessageImpl
         implements DMNMessage {
     private Severity                 severity;
     private DMNMessageTypeImpl       message;
-    private DMNElement source;
+    private DMNModelInstrumentedBase source;
     private Throwable                exception;
     private FEELEvent                feelEvent;
 
     public DMNMessageImpl() {
     }
 
-    public DMNMessageImpl(Severity severity, DMNMessageTypeImpl message, DMNElement source) {
+    public DMNMessageImpl(Severity severity, DMNMessageTypeImpl message, DMNModelInstrumentedBase source) {
         this( severity, message, source, (Throwable) null );
     }
 
-    public DMNMessageImpl(Severity severity, DMNMessageTypeImpl message, DMNElement source, Throwable exception) {
+    public DMNMessageImpl(Severity severity, DMNMessageTypeImpl message, DMNModelInstrumentedBase source, Throwable exception) {
         this.severity = severity;
         this.message = message;
         this.source = source;
         this.exception = exception;
     }
 
-    public DMNMessageImpl(Severity severity, DMNMessageTypeImpl message, DMNElement source, FEELEvent feelEvent) {
+    public DMNMessageImpl(Severity severity, DMNMessageTypeImpl message, DMNModelInstrumentedBase source, FEELEvent feelEvent) {
         this.severity = severity;
         this.message = message;
         this.source = source;
@@ -59,13 +61,14 @@ public class DMNMessageImpl
         return message.getMessage();
     }
     
+    @Override
     public DMNMessageTypeId getMessageId() {
         return this.message.getMessageTypeId();
     }
 
     @Override
     public String getSourceId() {
-        return source != null ? source.getId() : null;
+        return source != null && source instanceof DMNElement ? ((DMNElement) source).getId() : null;
     }
 
     @Override

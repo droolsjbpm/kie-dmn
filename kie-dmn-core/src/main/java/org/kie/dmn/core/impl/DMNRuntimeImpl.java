@@ -35,6 +35,7 @@ import org.kie.dmn.api.core.event.DMNRuntimeEventListener;
 import org.kie.dmn.core.ast.BusinessKnowledgeModelNodeImpl;
 import org.kie.dmn.core.ast.DecisionNodeImpl;
 import org.kie.dmn.core.util.Msg;
+import org.kie.dmn.core.util.MsgUtil;
 import org.kie.internal.io.ResourceTypePackage;
 
 import java.util.*;
@@ -87,7 +88,7 @@ public class DMNRuntimeImpl
         if( decision != null ) {
             evaluateDecision( context, result, decision );
         } else {
-            result.addMessage( DMNMessage.Severity.ERROR, Msg.createMessage(Msg.DECISION_NOT_FOUND_FOR_NAME, decisionName ), null );
+            result.addMessage( DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.DECISION_NOT_FOUND_FOR_NAME, decisionName ), null );
         }
         return result;
     }
@@ -99,7 +100,7 @@ public class DMNRuntimeImpl
         if( decision != null ) {
             evaluateDecision( context, result, decision );
         } else {
-            result.addMessage( DMNMessage.Severity.ERROR, Msg.createMessage(Msg.DECISION_NOT_FOUND_FOR_ID, decisionId ), null );
+            result.addMessage( DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.DECISION_NOT_FOUND_FOR_ID, decisionId ), null );
         }
         return result;
     }
@@ -145,7 +146,7 @@ public class DMNRuntimeImpl
         // TODO: do we need to check/resolve dependencies?
         if( bkm.getEvaluator() == null ) {
             DMNMessage msg = result.addMessage( DMNMessage.Severity.WARN,
-                                                Msg.createMessage(Msg.MISSING_EXPRESSION_FOR_BKM_NODE_SKIP_EVAL, getIdentifier( bkm ) ),
+                                                MsgUtil.createMessage(Msg.MISSING_EXPRESSION_FOR_BKM_NODE_SKIP_EVAL, getIdentifier( bkm ) ),
                                                 bkm.getSource() );
             return;
         }
@@ -156,7 +157,7 @@ public class DMNRuntimeImpl
                     if( dep instanceof BusinessKnowledgeModelNode ) {
                         evaluateBKM( context, result, (BusinessKnowledgeModelNode) dep );
                     } else {
-                        DMNMessageTypeImpl message = Msg.createMessage(Msg.MISSING_DEP_FOR_BKM, getIdentifier( bkm ), getIdentifier( dep ) );
+                        DMNMessageTypeImpl message = MsgUtil.createMessage(Msg.MISSING_DEP_FOR_BKM, getIdentifier( bkm ), getIdentifier( dep ) );
                         result.addMessage( DMNMessage.Severity.ERROR, message, bkm.getSource() );
                         return;
                     }
@@ -168,7 +169,7 @@ public class DMNRuntimeImpl
                 result.getContext().set( bkm.getBusinessKnowledModel().getVariable().getName(), er.getResult() );
             }
         } catch( Throwable t ) {
-            result.addMessage( DMNMessage.Severity.ERROR, Msg.createMessage(Msg.ERROR_EVAL_BKM_NODE, getIdentifier( bkm ), t.getMessage() ), bkm.getSource(), t );
+            result.addMessage( DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.ERROR_EVAL_BKM_NODE, getIdentifier( bkm ), t.getMessage() ), bkm.getSource(), t );
         } finally {
             eventManager.fireAfterEvaluateBKM( bkm, result );
         }
@@ -196,14 +197,14 @@ public class DMNRuntimeImpl
                     if( dep instanceof DecisionNode ) {
                         if( ! evaluateDecision( context, result, (DecisionNode) dep ) ) {
                             missingInput = true;
-                            DMNMessageTypeImpl message = Msg.createMessage(Msg.UNABLE_TO_EVALUATE_DECISION_AS_IT_DEPS , getIdentifier( decision ), getIdentifier( dep ) );
+                            DMNMessageTypeImpl message = MsgUtil.createMessage(Msg.UNABLE_TO_EVALUATE_DECISION_AS_IT_DEPS , getIdentifier( decision ), getIdentifier( dep ) );
                             reportFailure( result, decision, dr, null, message, DMNDecisionResult.DecisionEvaluationStatus.SKIPPED );
                         }
                     } else if( dep instanceof BusinessKnowledgeModelNode ) {
                         evaluateBKM( context, result, (BusinessKnowledgeModelNode) dep );
                     } else {
                         missingInput = true;
-                        DMNMessageTypeImpl message = Msg.createMessage(Msg.MISSING_DEP_FOR_DECISION,  getIdentifier( decision ), getIdentifier( dep ) );
+                        DMNMessageTypeImpl message = MsgUtil.createMessage(Msg.MISSING_DEP_FOR_DECISION,  getIdentifier( decision ), getIdentifier( dep ) );
                         reportFailure( result, decision, dr, null, message, DMNDecisionResult.DecisionEvaluationStatus.SKIPPED );
                     }
                 }
@@ -213,7 +214,7 @@ public class DMNRuntimeImpl
             }
             if( decision.getEvaluator() == null ) {
                 DMNMessage msg = result.addMessage( DMNMessage.Severity.WARN,
-                                                    Msg.createMessage(Msg.MISSING_EXPRESSION_FOR_DECISION_NODE_SKIP_EVAL, decision.getName() ),
+                                                    MsgUtil.createMessage(Msg.MISSING_EXPRESSION_FOR_DECISION_NODE_SKIP_EVAL, decision.getName() ),
                                                     decision.getSource() );
                 dr.getMessages().add( msg );
                 dr.setEvaluationStatus( DMNDecisionResult.DecisionEvaluationStatus.SKIPPED );
@@ -236,7 +237,7 @@ public class DMNRuntimeImpl
                     dr.setEvaluationStatus( DMNDecisionResult.DecisionEvaluationStatus.FAILED );
                 }
             } catch( Throwable t ) {
-                DMNMessageTypeImpl message = Msg.createMessage(Msg.ERROR_EVAL_DECISION_NODE, decision.getName(), t.getMessage() );
+                DMNMessageTypeImpl message = MsgUtil.createMessage(Msg.ERROR_EVAL_DECISION_NODE, decision.getName(), t.getMessage() );
                 reportFailure( result, decision, dr, t, message, DMNDecisionResult.DecisionEvaluationStatus.FAILED );
             }
             return true;

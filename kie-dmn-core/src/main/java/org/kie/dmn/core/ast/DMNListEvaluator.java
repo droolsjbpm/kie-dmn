@@ -27,6 +27,7 @@ import org.kie.dmn.core.impl.DMNContextImpl;
 import org.kie.dmn.core.impl.DMNMessageTypeImpl;
 import org.kie.dmn.core.impl.DMNResultImpl;
 import org.kie.dmn.core.util.Msg;
+import org.kie.dmn.core.util.MsgUtil;
 import org.kie.dmn.model.v1_1.DMNElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +74,7 @@ public class DMNListEvaluator
                     if ( er.getResultType() == ResultType.SUCCESS ) {
                         results.add( er.getResult() );
                     } else {
-                        DMNMessageTypeImpl message = Msg.createMessage(Msg.ERR_EVAL_LIST_ELEMENT_ON_POSITION_ON_LIST, (index + 1), name);
+                        DMNMessageTypeImpl message = MsgUtil.createMessage(Msg.ERR_EVAL_LIST_ELEMENT_ON_POSITION_ON_LIST, (index + 1), name);
                         logger.error( message.getMessage() );
                         result.addMessage(
                                 DMNMessage.Severity.ERROR,
@@ -82,7 +83,7 @@ public class DMNListEvaluator
                         return new EvaluatorResultImpl( results, ResultType.FAILURE );
                     }
                 } catch ( Exception e ) {
-                    DMNMessageTypeImpl message = Msg.createMessage(Msg.ERR_EVAL_LIST_ELEMENT_ON_POSITION_ON_LIST, (index + 1), name);
+                    DMNMessageTypeImpl message = MsgUtil.createMessage(Msg.ERR_EVAL_LIST_ELEMENT_ON_POSITION_ON_LIST, (index + 1), name);
                     logger.error( message.getMessage() );
                     result.addMessage(
                             DMNMessage.Severity.ERROR,

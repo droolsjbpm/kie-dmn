@@ -28,6 +28,7 @@ import org.kie.dmn.api.feel.runtime.events.FEELEventListener;
 import org.kie.dmn.core.impl.DMNResultImpl;
 import org.kie.dmn.core.impl.DMNRuntimeEventManagerImpl;
 import org.kie.dmn.core.util.Msg;
+import org.kie.dmn.core.util.MsgUtil;
 import org.kie.dmn.feel.FEEL;
 import org.kie.dmn.feel.lang.impl.EvaluationContextImpl;
 import org.kie.dmn.feel.lang.impl.FEELImpl;
@@ -99,10 +100,10 @@ public class DMNDTExpressionEvaluator
             } else if ( e instanceof DecisionTableRulesSelectedEvent ) {
                 r.fired = ((DecisionTableRulesSelectedEvent) e).getFired();
             } else if ( e.getSeverity() == FEELEvent.Severity.ERROR ) {
-                result.addMessage( DMNMessage.Severity.ERROR, Msg.createMessage(Msg.FEEL_ERROR, e.getMessage()), ((DMNBaseNode)node).getSource(), e );
+                result.addMessage( DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.FEEL_ERROR, e.getMessage()), ((DMNBaseNode)node).getSource(), e );
                 r.hasErrors = true;
             } else if ( e.getSeverity() == FEELEvent.Severity.WARN ) {
-                result.addMessage( DMNMessage.Severity.WARN, Msg.createMessage(Msg.FEEL_WARN, e.getMessage()), ((DMNBaseNode)node).getSource(), e );
+                result.addMessage( DMNMessage.Severity.WARN, MsgUtil.createMessage(Msg.FEEL_WARN, e.getMessage()), ((DMNBaseNode)node).getSource(), e );
             }
         }
         events.clear();
