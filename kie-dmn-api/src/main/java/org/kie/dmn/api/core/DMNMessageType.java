@@ -1,6 +1,6 @@
 package org.kie.dmn.api.core;
 
-public enum DMNMessageTypeId {
+public enum DMNMessageType {
     ELEMENT_WITH_ID_NOT_SUPPORTED(Tag.DMN_CORE),                // compilation
     REQ_NOT_FOUND(Tag.DMN_CORE),                                // compilation
     NO_TYPE_REF_FOUND(Tag.DMN_CORE),                            // dups?
@@ -54,7 +54,7 @@ public enum DMNMessageTypeId {
     
     private Tag[] tags;
 
-    DMNMessageTypeId(Tag... tags) {
+    DMNMessageType(Tag... tags) {
         this.tags = tags;
     }
 

@@ -35,6 +35,8 @@ import org.kie.dmn.feel.lang.impl.FEELImpl;
 import org.kie.dmn.feel.runtime.events.DecisionTableRulesSelectedEvent;
 import org.kie.dmn.feel.runtime.events.DecisionTableRulesMatchedEvent;
 import org.kie.dmn.feel.runtime.functions.DTInvokerFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +48,8 @@ import java.util.function.Function;
  */
 public class DMNDTExpressionEvaluator
         implements DMNExpressionEvaluator, FEELEventListener {
+    private static Logger logger = LoggerFactory.getLogger( DMNDTExpressionEvaluator.class );
+
     private final DMNNode           node;
     private       DTInvokerFunction dt;
     private       FEELImpl          feel;
@@ -100,10 +104,24 @@ public class DMNDTExpressionEvaluator
             } else if ( e instanceof DecisionTableRulesSelectedEvent ) {
                 r.fired = ((DecisionTableRulesSelectedEvent) e).getFired();
             } else if ( e.getSeverity() == FEELEvent.Severity.ERROR ) {
-                result.addMessage( DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.FEEL_ERROR, e.getMessage()), ((DMNBaseNode)node).getSource(), e );
+                MsgUtil.reportMessage( logger,
+                                       DMNMessage.Severity.ERROR,
+                                       ((DMNBaseNode)node).getSource(),
+                                       result,
+                                       null,
+                                       e,
+                                       Msg.FEEL_ERROR,
+                                       e.getMessage() );
                 r.hasErrors = true;
             } else if ( e.getSeverity() == FEELEvent.Severity.WARN ) {
-                result.addMessage( DMNMessage.Severity.WARN, MsgUtil.createMessage(Msg.FEEL_WARN, e.getMessage()), ((DMNBaseNode)node).getSource(), e );
+                MsgUtil.reportMessage( logger,
+                                       DMNMessage.Severity.WARN,
+                                       ((DMNBaseNode)node).getSource(),
+                                       result,
+                                       null,
+                                       e,
+                                       Msg.FEEL_WARN,
+                                       e.getMessage() );
             }
         }
         events.clear();

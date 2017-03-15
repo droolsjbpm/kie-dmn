@@ -7,7 +7,6 @@ import org.kie.dmn.api.core.ast.DMNNode;
 import org.kie.dmn.api.core.ast.DecisionNode;
 import org.kie.dmn.core.api.DMNExpressionEvaluator;
 import org.kie.dmn.core.ast.*;
-import org.kie.dmn.core.impl.DMNMessageTypeImpl;
 import org.kie.dmn.core.impl.DMNModelImpl;
 import org.kie.dmn.core.util.Msg;
 import org.kie.dmn.core.util.MsgUtil;
@@ -16,6 +15,8 @@ import org.kie.dmn.feel.runtime.UnaryTest;
 import org.kie.dmn.feel.runtime.decisiontables.*;
 import org.kie.dmn.feel.runtime.functions.DTInvokerFunction;
 import org.kie.dmn.model.v1_1.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.List;
@@ -23,6 +24,8 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 public class DMNEvaluatorCompiler {
+
+    private static final Logger logger = LoggerFactory.getLogger( DMNEvaluatorCompiler.class );
 
     private final DMNFEELHelper feel;
     private DMNCompilerImpl compiler;
@@ -49,9 +52,24 @@ public class DMNEvaluatorCompiler {
             return compileInvocation( ctx, model, node, (Invocation) expression );
         } else {
             if ( expression != null ) {
-                model.addMessage( DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.EXPR_TYPE_NOT_SUPPORTED_IN_NODE, expression.getClass().getSimpleName(), node.getIdentifierString() ), node.getSource() );
+                MsgUtil.reportMessage( logger,
+                                       DMNMessage.Severity.ERROR,
+                                       node.getSource(),
+                                       model,
+                                       null,
+                                       null,
+                                       Msg.EXPR_TYPE_NOT_SUPPORTED_IN_NODE,
+                                       expression.getClass().getSimpleName(),
+                                       node.getIdentifierString() );
             } else {
-                model.addMessage( DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.NO_EXPR_DEF_FOR_NODE, node.getIdentifierString() ), node.getSource() );
+                MsgUtil.reportMessage( logger,
+                                       DMNMessage.Severity.ERROR,
+                                       node.getSource(),
+                                       model,
+                                       null,
+                                       null,
+                                       Msg.NO_EXPR_DEF_FOR_NODE,
+                                       node.getIdentifierString() );
             }
         }
         return null;
@@ -238,10 +256,27 @@ public class DMNEvaluatorCompiler {
                                                                                         createErrorMsg( node, exprName, expression, 0, exprText ) );
                     evaluator = new DMNLiteralExpressionEvaluator( compiledExpression );
                 } catch ( Throwable e ) {
-                    model.addMessage( DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_FOR_NAME_ON_NODE, exprName, expression, node.getIdentifierString()), expression, e );
+                    MsgUtil.reportMessage( logger,
+                                           DMNMessage.Severity.ERROR,
+                                           expression,
+                                           model,
+                                           e,
+                                           null,
+                                           Msg.ERR_COMPILING_FEEL_EXPR_FOR_NAME_ON_NODE,
+                                           exprName,
+                                           expression,
+                                           node.getIdentifierString() );
                 }
             } else {
-                model.addMessage( DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.NO_EXPR_DEF_FOR_NAME_ON_NODE, exprName, node.getIdentifierString() ), expression );
+                MsgUtil.reportMessage( logger,
+                                       DMNMessage.Severity.ERROR,
+                                       expression,
+                                       model,
+                                       null,
+                                       null,
+                                       Msg.NO_EXPR_DEF_FOR_NAME_ON_NODE,
+                                       exprName,
+                                       node.getIdentifierString() );
             }
         }
         return evaluator;

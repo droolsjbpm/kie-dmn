@@ -27,7 +27,6 @@ import org.kie.dmn.api.core.event.DMNRuntimeEventManager;
 import org.kie.dmn.api.feel.runtime.events.FEELEvent;
 import org.kie.dmn.api.feel.runtime.events.FEELEventListener;
 import org.kie.dmn.core.impl.DMNContextImpl;
-import org.kie.dmn.core.impl.DMNMessageTypeImpl;
 import org.kie.dmn.core.impl.DMNResultImpl;
 import org.kie.dmn.core.util.Msg;
 import org.kie.dmn.core.util.MsgUtil;
@@ -38,7 +37,6 @@ import org.kie.dmn.feel.lang.impl.NamedParameter;
 import org.kie.dmn.model.v1_1.DMNElement;
 import org.kie.dmn.model.v1_1.Invocation;
 import org.kie.dmn.feel.runtime.FEELFunction;
-import org.kie.dmn.model.v1_1.Invocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,12 +83,15 @@ public class DMNInvocationEvaluator
         try {
             FEELFunction function = (FEELFunction) previousContext.get( functionName );
             if ( function == null ) {
-                DMNMessageTypeImpl message = MsgUtil.createMessage(Msg.FUNCTION_NOT_FOUND_INVOCATION_FAILED_ON_NODE, functionName, nodeName);
-                logger.error( message.getMessage() );
-                result.addMessage(
-                        DMNMessage.Severity.ERROR,
-                        message,
-                        node );
+                MsgUtil.reportMessage( logger,
+                                       DMNMessage.Severity.ERROR,
+                                       node,
+                                       result,
+                                       null,
+                                       null,
+                                       Msg.FUNCTION_NOT_FOUND_INVOCATION_FAILED_ON_NODE,
+                                       functionName,
+                                       nodeName );
                 return new EvaluatorResultImpl( null, ResultType.FAILURE );
             }
             Object[] namedParams = new Object[parameters.size()];
@@ -101,22 +102,28 @@ public class DMNInvocationEvaluator
                     if ( value.getResultType() == ResultType.SUCCESS ) {
                         namedParams[index++] = new NamedParameter( param.name, value.getResult() );
                     } else {
-                        DMNMessageTypeImpl message = MsgUtil.createMessage(Msg.ERR_EVAL_PARAM_FOR_INVOCATION_ON_NODE,  param.name, functionName, nodeName);
-                        logger.error( message.getMessage() );
-                        result.addMessage(
-                                DMNMessage.Severity.ERROR,
-                                message,
-                                node );
+                        MsgUtil.reportMessage( logger,
+                                               DMNMessage.Severity.ERROR,
+                                               node,
+                                               result,
+                                               null,
+                                               null,
+                                               Msg.ERR_EVAL_PARAM_FOR_INVOCATION_ON_NODE,
+                                               param.name,
+                                               functionName,
+                                               nodeName );
                         return new EvaluatorResultImpl( null, ResultType.FAILURE );
                     }
                 } catch ( Exception e ) {
-                    DMNMessageTypeImpl message = MsgUtil.createMessage(Msg.ERR_INVOKING_PARAM_EXPR_FOR_PARAM_ON_NODE, param.name, nodeName);
-                    logger.error( message.getMessage(), e );
-                    result.addMessage(
-                            DMNMessage.Severity.ERROR,
-                            message,
-                            node,
-                            e );
+                    MsgUtil.reportMessage( logger,
+                                           DMNMessage.Severity.ERROR,
+                                           node,
+                                           result,
+                                           e,
+                                           null,
+                                           Msg.ERR_INVOKING_PARAM_EXPR_FOR_PARAM_ON_NODE,
+                                           param.name,
+                                           nodeName );
                     return new EvaluatorResultImpl( null, ResultType.FAILURE );
                 }
             }
@@ -127,17 +134,19 @@ public class DMNInvocationEvaluator
             boolean hasErrors = hasErrors( events, eventManager, result );
             return new EvaluatorResultImpl( invocationResult, hasErrors ? ResultType.FAILURE : ResultType.SUCCESS );
         } catch ( Throwable t ) {
-            DMNMessageTypeImpl message = MsgUtil.createMessage(Msg.ERR_INVOKING_FUNCTION_ON_NODE, functionName, nodeName);
-            logger.error( message.getMessage() );
-            result.addMessage(
-                    DMNMessage.Severity.ERROR,
-                    message,
-                    node,
-                    t );
+            MsgUtil.reportMessage( logger,
+                                   DMNMessage.Severity.ERROR,
+                                   node,
+                                   result,
+                                   t,
+                                   null,
+                                   Msg.ERR_INVOKING_FUNCTION_ON_NODE,
+                                   functionName,
+                                   nodeName );
+            return new EvaluatorResultImpl( null, ResultType.FAILURE );
         } finally {
             result.setContext( previousContext );
         }
-        return new EvaluatorResultImpl( invocationResult, ResultType.SUCCESS );
     }
 
     private static class ActualParameter {
@@ -161,7 +170,14 @@ public class DMNInvocationEvaluator
         boolean hasErrors = false;
         for ( FEELEvent e : events ) {
             if ( e.getSeverity() == FEELEvent.Severity.ERROR ) {
-                result.addMessage( DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.FEEL_ERROR, e.getMessage()), invocation, e );
+                MsgUtil.reportMessage( logger,
+                                       DMNMessage.Severity.ERROR,
+                                       invocation,
+                                       result,
+                                       null,
+                                       e,
+                                       Msg.FEEL_ERROR,
+                                       e.getMessage() );
                 hasErrors = true;
             }
         }

@@ -44,11 +44,11 @@ public interface DMNMessage {
     String getMessage();
     
     /**
-     * Returns a classification ID of the event that raised the message.
+     * Returns a classification of the event that raised the message.
      *
      * @return
      */
-    DMNMessageTypeId getMessageId();
+    DMNMessageType getMessageType();
 
     /**
      * Returns the ID of the model element to which this message relates to

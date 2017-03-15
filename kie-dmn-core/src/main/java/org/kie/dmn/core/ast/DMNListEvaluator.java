@@ -24,7 +24,6 @@ import org.kie.dmn.core.api.EvaluatorResult;
 import org.kie.dmn.core.api.EvaluatorResult.ResultType;
 import org.kie.dmn.api.core.event.DMNRuntimeEventManager;
 import org.kie.dmn.core.impl.DMNContextImpl;
-import org.kie.dmn.core.impl.DMNMessageTypeImpl;
 import org.kie.dmn.core.impl.DMNResultImpl;
 import org.kie.dmn.core.util.Msg;
 import org.kie.dmn.core.util.MsgUtil;
@@ -74,22 +73,27 @@ public class DMNListEvaluator
                     if ( er.getResultType() == ResultType.SUCCESS ) {
                         results.add( er.getResult() );
                     } else {
-                        DMNMessageTypeImpl message = MsgUtil.createMessage(Msg.ERR_EVAL_LIST_ELEMENT_ON_POSITION_ON_LIST, (index + 1), name);
-                        logger.error( message.getMessage() );
-                        result.addMessage(
-                                DMNMessage.Severity.ERROR,
-                                message,
-                                node );
+                        MsgUtil.reportMessage( logger,
+                                               DMNMessage.Severity.ERROR,
+                                               node,
+                                               result,
+                                               null,
+                                               null,
+                                               Msg.ERR_EVAL_LIST_ELEMENT_ON_POSITION_ON_LIST,
+                                               index + 1,
+                                               name );
                         return new EvaluatorResultImpl( results, ResultType.FAILURE );
                     }
                 } catch ( Exception e ) {
-                    DMNMessageTypeImpl message = MsgUtil.createMessage(Msg.ERR_EVAL_LIST_ELEMENT_ON_POSITION_ON_LIST, (index + 1), name);
-                    logger.error( message.getMessage() );
-                    result.addMessage(
-                            DMNMessage.Severity.ERROR,
-                            message,
-                            node,
-                            e );
+                    MsgUtil.reportMessage( logger,
+                                           DMNMessage.Severity.ERROR,
+                                           node,
+                                           result,
+                                           e,
+                                           null,
+                                           Msg.ERR_EVAL_LIST_ELEMENT_ON_POSITION_ON_LIST,
+                                           index + 1,
+                                           name );
                     return new EvaluatorResultImpl( results, ResultType.FAILURE );
                 } finally {
                     index++;
