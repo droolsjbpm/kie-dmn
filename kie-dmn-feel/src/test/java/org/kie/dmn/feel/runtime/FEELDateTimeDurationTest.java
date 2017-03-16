@@ -82,12 +82,14 @@ public class FEELDateTimeDurationTest extends BaseFEELTest {
                 { "date and time(\"2016-07-29T05:48:23.765-05:00\").minute", BigDecimal.valueOf( 48 ) },
                 { "date and time(\"2016-07-29T05:48:23.765-05:00\").second", BigDecimal.valueOf( 23 ) },
                 { "date and time(\"2016-07-29T05:48:23.765-05:00\").time offset", Duration.parse( "PT-5H" )},
-                { "date and time(\"2016-07-29T05:48:23.765-05:00\").timezone", Duration.parse( "PT-5H" ) },
+                // TODO When we have timezones solved out, this test case should be modified and uncommented
+                // { "date and time(\"2016-07-29T05:48:23.765@SomeTimeZoneFormat\").timezone", someTimezoneResult},
                 { "time(\"13:20:00-05:00\").hour", BigDecimal.valueOf( 13 )},
                 { "time(\"13:20:00-05:00\").minute", BigDecimal.valueOf( 20 )},
                 { "time(\"13:20:00-05:00\").second", BigDecimal.valueOf( 0 )},
                 { "time(\"13:20:00-05:00\").time offset", Duration.parse( "PT-5H" )},
-                { "time(\"13:20:00-05:00\").timezone", Duration.parse( "PT-5H" ) },
+                // TODO When we have timezones solved out, this test case should be modified and uncommented
+//                { "time(\"13:20:00@SomeTimeZoneFormat\").timezone", someTimeZoneResult },
                 { "duration( \"P2DT20H14M\" ).days", BigDecimal.valueOf(2) },
                 { "duration( \"P2DT20H14M\" ).hours", BigDecimal.valueOf(20) },
                 { "duration( \"P2DT20H14M\" ).minutes", BigDecimal.valueOf(14) },
