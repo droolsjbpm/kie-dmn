@@ -282,15 +282,15 @@ public class DMNEvaluatorCompiler {
         return evaluator;
     }
 
-    private List<UnaryTest> textToUnaryTestList(DMNCompilerContext ctx, String text, DMNModelImpl model, DMNElement element, DMNMessageTypeImpl errorMsg ) {
+    private List<UnaryTest> textToUnaryTestList(DMNCompilerContext ctx, String text, DMNModelImpl model, DMNElement element, String errorMsg ) {
         if (text == null || text.isEmpty()) {
             return Collections.emptyList();
         }
         return feel.evaluateUnaryTests( ctx, text, model, element, errorMsg );
     }
 
-    public DMNMessageTypeImpl createErrorMsg(DMNNode node, String elementName, DMNElement element, int index, String expression) {
-        DMNMessageTypeImpl errorMsg;
+    private String createErrorMsg(DMNNode node, String elementName, DMNElement element, int index, String expression) {
+        String errorMsg;
         if ( element instanceof InputClause ) {
             errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_INPUT_CLAUSE_IDX, expression, elementName, index); 
         } else if ( element instanceof OutputClause ) {

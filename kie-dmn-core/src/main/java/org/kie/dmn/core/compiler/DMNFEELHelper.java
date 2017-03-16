@@ -54,7 +54,7 @@ public class DMNFEELHelper
         return ce;
     }
 
-    public List<UnaryTest> evaluateUnaryTests(DMNCompilerContext ctx, String unaryTests, DMNModelImpl model, DMNElement element, DMNMessageTypeImpl errorMsg) {
+    public List<UnaryTest> evaluateUnaryTests(DMNCompilerContext ctx, String unaryTests, DMNModelImpl model, DMNElement element, String errorMsg) {
         Map<String, Type> variableTypes = new HashMap<>(  );
         for( Map.Entry<String, DMNType> entry : ctx.getVariables().entrySet() ) {
             // TODO: need to properly resolve types here
@@ -65,7 +65,7 @@ public class DMNFEELHelper
         return result;
     }
 
-    public void processEvents(DMNModelImpl model, DMNElement element, DMNMessageTypeImpl msg) {
+    public void processEvents(DMNModelImpl model, DMNElement element, String msg) {
         while ( !feelEvents.isEmpty() ) {
             FEELEvent event = feelEvents.remove();
             if ( !isDuplicateEvent( model, event, msg ) ) {
