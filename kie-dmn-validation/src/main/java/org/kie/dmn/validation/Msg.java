@@ -35,7 +35,7 @@ public class Msg {
     public static final Message0 DTABLE_SINGLEOUT_NOTYPEREF = new Message0( DMNMessageType.DTABLE_SINGLEOUT_NOTYPEREF, "Decision table with single output should not have output typeRef");
     public static final Message0 ELEMREF_MISSING_TARGET = new Message0( DMNMessageType.ELEMREF_MISSING_TARGET, "Element reference is pointing to a unknown target");
     public static final Message0 ELEMREF_NOHASH = new Message0( DMNMessageType.ELEMREF_NOHASH, "This element 'href' reference is expected to be using an anchor  = new Message0(DMNMessageTypeId.FEEL_PROBLEM, hash sign) for pointing to a target element reference");
-    public static final Message1 FAILED_VALIDATOR = new Message1( DMNMessageType.FAILED_VALIDATOR, "The Validator Was unable to compile embedded DMN validation rules, validation of the DMN Model cannot be performed. Error: %s");
+    public static final Message0 FAILED_VALIDATOR = new Message0( DMNMessageType.FAILED_VALIDATOR, "The Validator Was unable to compile embedded DMN validation rules, validation of the DMN Model cannot be performed.");
     public static final Message0 FAILED_XML_VALIDATION = new Message0( DMNMessageType.FAILED_XML_VALIDATION, "Failed XML validation of DMN file");
     public static final Message0 FORMAL_PARAM_DUPLICATED = new Message0( DMNMessageType.FORMAL_PARAM_DUPLICATED, "formal parameter with duplicated name");
     public static final Message0 INPUTDATA_MISSING_VAR = new Message0( DMNMessageType.INPUTDATA_MISSING_VAR, "InputData is missing variable or name does not match the variable name");

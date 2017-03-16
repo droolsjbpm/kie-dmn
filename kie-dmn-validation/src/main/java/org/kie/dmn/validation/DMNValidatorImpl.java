@@ -21,29 +21,22 @@ import static java.util.stream.Collectors.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import org.drools.core.util.IoUtils;
+import org.drools.core.util.Drools;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
-import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.Message;
 import org.kie.api.builder.Message.Level;
-import org.kie.api.builder.ReleaseId;
 import org.kie.api.builder.Results;
-import org.kie.api.event.rule.DefaultRuleRuntimeEventListener;
-import org.kie.api.event.rule.ObjectInsertedEvent;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.StatelessKieSession;
 import org.kie.dmn.api.core.DMNMessage;
@@ -51,6 +44,7 @@ import org.kie.dmn.core.impl.DMNMessageImpl;
 import org.kie.dmn.core.util.MsgUtil;
 import org.kie.dmn.model.v1_1.DMNModelInstrumentedBase;
 import org.kie.dmn.model.v1_1.Definitions;
+import org.kie.dmn.core.util.KieHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -71,41 +65,24 @@ public class DMNValidatorImpl implements DMNValidator {
      * unless at runtime some problem prevented building it correctly.
      */
     private Optional<KieContainer> kieContainer;
+
     /**
      * Collect at init time the runtime issues which prevented to build the `kieContainer` correctly.
      */
     private List<DMNMessage> failedInitMsg;
-    
+
     public DMNValidatorImpl() {
-        KieServices ks = KieServices.Factory.get();
-        KieFileSystem kfs = ks.newKieFileSystem();
-        ReleaseId rid = ks.newReleaseId("org.kie", "kie-dmn-validation", "1");
-        kfs.generateAndWritePomXML(rid);
-        try {
-            kfs.write("src/main/resources/rules.drl", IoUtils.readBytesFromInputStream( DMNValidatorImpl.class.getResourceAsStream("/rules.drl") ));
-        } catch (IOException e) {
-            LOG.error("Unable to read embedded DMN validation rule file.", e);
-            String message = MsgUtil.createMessage(Msg.FAILED_VALIDATOR, e.getMessage());
-            failedInitMsg.add(new DMNMessageImpl(DMNMessage.Severity.ERROR, message, Msg.FAILED_VALIDATOR.getType(), null, e ) );
-        }
-        KieBuilder kieBuilder = ks.newKieBuilder(kfs).buildAll();
-        Results results = kieBuilder.getResults();
-        for ( Message m : results.getMessages(new Message.Level[]{Message.Level.ERROR, Message.Level.WARNING}) ) {
-            if (m.getLevel() == Level.ERROR) {
-                LOG.error("{}", m);
-            } else if (m.getLevel() == Level.WARNING) {
-                LOG.warn("{}", m);
-            }
-        }
-        
-        if (results.hasMessages(new Message.Level[]{Message.Level.ERROR})) {
-            LOG.error("Errors while compiling embedded DMN validation rules.");
-            results.getMessages().stream()
-                .map(m -> new DMNMessageImpl(DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.FAILED_VALIDATOR, m.toString()), Msg.FAILED_VALIDATOR.getType(), null ))
-                .forEach(vm -> failedInitMsg.add(vm));
-            this.kieContainer = Optional.empty();
+        final KieServices ks = KieServices.Factory.get();
+        final KieContainer kieContainer = KieHelper.getKieContainer(
+                ks.newReleaseId( "org.kie", "kie-dmn-validation", Drools.getFullVersion() ),
+                ks.getResources().newClassPathResource("dmn-validation-rules.drl", getClass() ) );
+        if( kieContainer != null ) {
+            this.kieContainer = Optional.of( kieContainer );
         } else {
-            this.kieContainer = Optional.of( ks.newKieContainer(rid) );
+            this.kieContainer = Optional.empty();
+            LOG.error("Unable to load embedded DMN validation rules file." );
+            String message = MsgUtil.createMessage( Msg.FAILED_VALIDATOR );
+            failedInitMsg.add(new DMNMessageImpl(DMNMessage.Severity.ERROR, message, Msg.FAILED_VALIDATOR.getType(), null ) );
         }
     }
     
