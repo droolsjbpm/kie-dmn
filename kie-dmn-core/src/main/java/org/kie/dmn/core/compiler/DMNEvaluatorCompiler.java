@@ -188,7 +188,10 @@ public class DMNEvaluatorCompiler {
                                                                inputValuesText,
                                                                model,
                                                                ic,
-                                                               createErrorMsg( node, node.getIdentifierString(), ic, ++index, inputValuesText ) ) ) );
+                                                               Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_INPUT_CLAUSE_IDX,
+                                                               inputValuesText,
+                                                               node.getIdentifierString(),
+                                                               ++index ) ) );
         }
         java.util.List<DTOutputClause> outputs = new ArrayList<>();
         index = 0;
@@ -204,7 +207,10 @@ public class DMNEvaluatorCompiler {
                                                                                                             outputValuesText,
                                                                                                             model,
                                                                                                             oc,
-                                                                                                            createErrorMsg( node, node.getIdentifierString(), oc, ++index, outputValuesText ) );
+                                                                                                            Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_OUTPUT_CLAUSE_IDX,
+                                                                                                            outputValuesText,
+                                                                                                            node.getIdentifierString(),
+                                                                                                            ++index );
 
             outputs.add( new DTOutputClause( outputName, id, outputValues, defaultValue ) );
         }
@@ -217,7 +223,10 @@ public class DMNEvaluatorCompiler {
                                                                        ut.getText(),
                                                                        model,
                                                                        dr,
-                                                                       createErrorMsg( node, node.getIdentifierString(), dr, index+1, ut.getText() ) );
+                                                                       Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_RULE_IDX,
+                                                                       ut.getText(),
+                                                                       node.getIdentifierString(),
+                                                                       index+1 );
                 rule.getInputEntry().add( (c, x) -> tests.stream().anyMatch( t -> {
                     Boolean result = t.apply( c, x );
                     return result != null && result == true;
@@ -252,8 +261,14 @@ public class DMNEvaluatorCompiler {
             String exprText = expression.getText();
             if( exprText != null ) {
                 try {
-                    CompiledExpression compiledExpression = feel.compileFeelExpression( ctx, exprText, model, expression,
-                                                                                        createErrorMsg( node, exprName, expression, 0, exprText ) );
+                    CompiledExpression compiledExpression = feel.compileFeelExpression( ctx,
+                                                                                        exprText,
+                                                                                        model,
+                                                                                        expression,
+                                                                                        Msg.ERR_COMPILING_FEEL_EXPR_FOR_NAME_ON_NODE,
+                                                                                        exprText,
+                                                                                        exprName,
+                                                                                        node.getIdentifierString() );
                     evaluator = new DMNLiteralExpressionEvaluator( compiledExpression );
                 } catch ( Throwable e ) {
                     MsgUtil.reportMessage( logger,
@@ -282,30 +297,30 @@ public class DMNEvaluatorCompiler {
         return evaluator;
     }
 
-    private List<UnaryTest> textToUnaryTestList(DMNCompilerContext ctx, String text, DMNModelImpl model, DMNElement element, String errorMsg ) {
+    private List<UnaryTest> textToUnaryTestList(DMNCompilerContext ctx, String text, DMNModelImpl model, DMNElement element, Msg.Message errorMsg, Object... msgParams ) {
         if (text == null || text.isEmpty()) {
             return Collections.emptyList();
         }
-        return feel.evaluateUnaryTests( ctx, text, model, element, errorMsg );
+        return feel.evaluateUnaryTests( ctx, text, model, element, errorMsg, msgParams );
     }
 
-    private String createErrorMsg(DMNNode node, String elementName, DMNElement element, int index, String expression) {
-        String errorMsg;
-        if ( element instanceof InputClause ) {
-            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_INPUT_CLAUSE_IDX, expression, elementName, index); 
-        } else if ( element instanceof OutputClause ) {
-            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_OUTPUT_CLAUSE_IDX, expression, elementName, index); 
-        } else if ( element instanceof ItemDefinition ) {
-            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_ALLOWED_VALUES_LIST_ON_ITEM_DEF, expression, elementName);
-        } else if ( element instanceof DecisionRule ) {
-            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_RULE_IDX, expression, elementName, index);
-        } else if ( element instanceof LiteralExpression ) {
-            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_FOR_NAME_ON_NODE, expression, elementName, ((DMNBaseNode)node).getIdentifierString() );
-        } else {
-            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT, expression, elementName);
-        }
-        return errorMsg;
-    }
+//    private String createErrorMsg(DMNNode node, String elementName, DMNElement element, int index, String expression) {
+//        String errorMsg;
+//        if ( element instanceof InputClause ) {
+//            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_INPUT_CLAUSE_IDX, expression, elementName, index);
+//        } else if ( element instanceof OutputClause ) {
+//            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_OUTPUT_CLAUSE_IDX, expression, elementName, index);
+//        } else if ( element instanceof ItemDefinition ) {
+//            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_ALLOWED_VALUES_LIST_ON_ITEM_DEF, expression, elementName);
+//        } else if ( element instanceof DecisionRule ) {
+//            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_RULE_IDX, expression, elementName, index);
+//        } else if ( element instanceof LiteralExpression ) {
+//            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_FOR_NAME_ON_NODE, expression, elementName, ((DMNBaseNode)node).getIdentifierString() );
+//        } else {
+//            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT, expression, elementName);
+//        }
+//        return errorMsg;
+//    }
 
 
 

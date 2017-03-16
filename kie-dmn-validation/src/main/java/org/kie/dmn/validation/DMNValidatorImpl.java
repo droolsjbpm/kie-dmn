@@ -85,7 +85,8 @@ public class DMNValidatorImpl implements DMNValidator {
             kfs.write("src/main/resources/rules.drl", IoUtils.readBytesFromInputStream( DMNValidatorImpl.class.getResourceAsStream("/rules.drl") ));
         } catch (IOException e) {
             LOG.error("Unable to read embedded DMN validation rule file.", e);
-            failedInitMsg.add(new DMNMessageImpl(DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.FAILED_VALIDATOR, e.getMessage()), null, e));
+            String message = MsgUtil.createMessage(Msg.FAILED_VALIDATOR, e.getMessage());
+            failedInitMsg.add(new DMNMessageImpl(DMNMessage.Severity.ERROR, message, Msg.FAILED_VALIDATOR.getType(), null, e ) );
         }
         KieBuilder kieBuilder = ks.newKieBuilder(kfs).buildAll();
         Results results = kieBuilder.getResults();
@@ -100,7 +101,7 @@ public class DMNValidatorImpl implements DMNValidator {
         if (results.hasMessages(new Message.Level[]{Message.Level.ERROR})) {
             LOG.error("Errors while compiling embedded DMN validation rules.");
             results.getMessages().stream()
-                .map(m -> new DMNMessageImpl(DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.FAILED_VALIDATOR, m.toString()), null ))
+                .map(m -> new DMNMessageImpl(DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.FAILED_VALIDATOR, m.toString()), Msg.FAILED_VALIDATOR.getType(), null ))
                 .forEach(vm -> failedInitMsg.add(vm));
             this.kieContainer = Optional.empty();
         } else {
@@ -119,7 +120,7 @@ public class DMNValidatorImpl implements DMNValidator {
         try {
             schema.newValidator().validate(s);
         } catch (SAXException | IOException e) {
-            problems.add(new DMNMessageImpl(DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.FAILED_XML_VALIDATION), null, e));
+            problems.add(new DMNMessageImpl(DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.FAILED_XML_VALIDATION), Msg.FAILED_VALIDATOR.getType(), null, e));
         }
         // TODO detect if the XSD is not provided through schemaLocation, and validate against embedded
         return problems;
@@ -132,33 +133,20 @@ public class DMNValidatorImpl implements DMNValidator {
         }
         
         StatelessKieSession kieSession = kieContainer.get().newStatelessKieSession();
-        
-        List<DMNMessage> problems = new ArrayList<>();
-        
-        kieSession.addEventListener(new DefaultRuleRuntimeEventListener() {
-            @Override
-            public void objectInserted(ObjectInsertedEvent event) {
-                if ( event.getObject() instanceof DMNMessage ) {
-                    problems.add((DMNMessage) event.getObject());
-                }
-            }
-        });
+        MessageReporter reporter = new MessageReporter();
+        kieSession.setGlobal( "reporter", reporter );
         
         kieSession.execute(allChildren(dmnModel).collect(toList()));
-        
+
         if ( LOG.isDebugEnabled() ) {
-            for ( DMNMessage m : problems ) {
+            for ( DMNMessage m : reporter.getMessages() ) {
                 LOG.debug("{}", m);
             }
         }
         
-        return problems;
+        return reporter.getMessages();
     }
 
-
-    
-    
-    
     @SuppressWarnings("unchecked")
     public static <T> Stream<T> allChildren(DMNModelInstrumentedBase root, Class<T> clazz) {
         return (Stream<T>) allChildren(root)

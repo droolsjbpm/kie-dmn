@@ -276,7 +276,7 @@ public class DMNCompilerImpl
                                 allowedValuesStr.getText(),
                                 dmnModel,
                                 itemDef,
-                                evaluatorCompiler.createErrorMsg( node, itemDef.getName(), itemDef, 0, allowedValuesStr.getText() )
+                                Msg.ERR_COMPILING_ALLOWED_VALUES_LIST_ON_ITEM_DEF
                         );
                         type.setAllowedValues( av );
                     }
