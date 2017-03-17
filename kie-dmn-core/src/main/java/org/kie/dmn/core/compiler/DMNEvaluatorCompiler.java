@@ -304,24 +304,4 @@ public class DMNEvaluatorCompiler {
         return feel.evaluateUnaryTests( ctx, text, model, element, errorMsg, msgParams );
     }
 
-//    private String createErrorMsg(DMNNode node, String elementName, DMNElement element, int index, String expression) {
-//        String errorMsg;
-//        if ( element instanceof InputClause ) {
-//            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_INPUT_CLAUSE_IDX, expression, elementName, index);
-//        } else if ( element instanceof OutputClause ) {
-//            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_OUTPUT_CLAUSE_IDX, expression, elementName, index);
-//        } else if ( element instanceof ItemDefinition ) {
-//            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_ALLOWED_VALUES_LIST_ON_ITEM_DEF, expression, elementName);
-//        } else if ( element instanceof DecisionRule ) {
-//            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT_RULE_IDX, expression, elementName, index);
-//        } else if ( element instanceof LiteralExpression ) {
-//            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_FOR_NAME_ON_NODE, expression, elementName, ((DMNBaseNode)node).getIdentifierString() );
-//        } else {
-//            errorMsg = MsgUtil.createMessage(Msg.ERR_COMPILING_FEEL_EXPR_ON_DT, expression, elementName);
-//        }
-//        return errorMsg;
-//    }
-
-
-
 }
