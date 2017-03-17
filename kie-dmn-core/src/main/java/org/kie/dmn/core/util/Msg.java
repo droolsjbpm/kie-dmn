@@ -1,6 +1,6 @@
 package org.kie.dmn.core.util;
 
-import org.kie.dmn.core.impl.DMNMessageTypeId;
+import org.kie.dmn.api.core.DMNMessageTypeId;
 import org.kie.dmn.core.impl.DMNMessageTypeImpl;
     
 public class Msg {
@@ -41,27 +41,7 @@ public class Msg {
     public static final Message2 ERR_INVOKING_FUNCTION_ON_NODE = new Message2(DMNMessageTypeId.ERR_INVOKE, "Error invoking function '%s' on node '%s'");
     public static final Message2 ERR_EVAL_LIST_ELEMENT_ON_POSITION_ON_LIST = new Message2(DMNMessageTypeId.ERR_EVAL, "Error evaluating list element on position '%s' on list '%s'");
     public static final Message3 ERR_EVAL_ROW_ELEMENT_ON_POSITION_ON_ROW_OF_RELATION = new Message3(DMNMessageTypeId.ERR_EVAL, "Error evaluating row element on position '%s' on row '%s' of relation '%s'");
-    
-    public static DMNMessageTypeImpl createMessage( Message0 message) {
-        return Msg.buildMessage(message);
-    }
-    public static DMNMessageTypeImpl createMessage( Message1 message, Object p1) {
-        return Msg.buildMessage(message, p1);
-    }
-    public static DMNMessageTypeImpl createMessage( Message2 message, Object p1, Object p2) {
-        return Msg.buildMessage(message, p1, p2);
-    }
-    public static DMNMessageTypeImpl createMessage( Message3 message, Object p1, Object p2, Object p3) {
-        return Msg.buildMessage(message, p1, p2, p3);
-    }
-    public static DMNMessageTypeImpl createMessage( Message4 message, Object p1, Object p2, Object p3, Object p4) {
-        return Msg.buildMessage(message, p1, p2, p3, p4);
-    }
-    
-    private static DMNMessageTypeImpl buildMessage( Message message, Object... params ) {
-        return new DMNMessageTypeImpl(String.format( message.getMask(), params ), message.getId());
-    }
-    
+  
     public static interface Message {
         String getMask();
         DMNMessageTypeId getId();

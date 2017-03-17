@@ -1,5 +1,6 @@
 package org.kie.dmn.core.impl;
 
+import org.kie.dmn.api.core.DMNMessageTypeId;
 
 public class DMNMessageTypeImpl {
 
