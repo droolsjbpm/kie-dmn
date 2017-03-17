@@ -3,11 +3,10 @@ package org.kie.dmn.api.core;
 public enum DMNMessageType {
     UNSUPPORTED_ELEMENT( Tag.COMPILATION, Tag.DMN_CORE),
     REQ_NOT_FOUND( Tag.COMPILATION, Tag.DMN_CORE),
-
-    NO_TYPE_REF_FOUND(Tag.DMN_CORE),                            // dups?
-    NO_TYPE_DEF_FOUND(Tag.DMN_CORE),                            // dups?
-    INVALID_NAME(Tag.DMN_CORE),                                 // dups?
-    INVALID_SYNTAX(Tag.DMN_CORE),                               // FEEL runtime
+    TYPE_REF_NOT_FOUND( Tag.COMPILATION, Tag.DMN_CORE),
+    TYPE_DEF_NOT_FOUND( Tag.COMPILATION, Tag.DMN_CORE),
+    INVALID_NAME( Tag.COMPILATION, Tag.DMN_CORE),
+    INVALID_SYNTAX( Tag.COMPILATION, Tag.RUNTIME, Tag.DMN_CORE),
     DECISION_NOT_FOUND(Tag.DMN_CORE),                           // API-call related
     MISSING_EXPRESSION(Tag.DMN_CORE),                           // dups?
     MISSING_DEP(Tag.DMN_CORE),                                  // compilation
@@ -49,8 +48,8 @@ public enum DMNMessageType {
     RELATION_ROW_CELL_NOTLITERAL (Tag.DMN_VALIDATION),
     RELATION_ROW_CELLCOUNTMISMATCH (Tag.DMN_VALIDATION),
     REQAUTH_NOT_KNOWLEDGESOURCE (Tag.DMN_VALIDATION),
-    TYPEREF_NO_FEEL_TYPE(Tag.DMN_VALIDATION),                   // DUPS of NO_TYPE_REF_FOUND ?
-    TYPEREF_NOT_FEEL_NOT_DEF(Tag.DMN_VALIDATION)                // DUPS of NO_TYPE_DEF_FOUND ?
+    TYPEREF_NO_FEEL_TYPE(Tag.DMN_VALIDATION),                   // DUPS of TYPE_REF_NOT_FOUND ?
+    TYPEREF_NOT_FEEL_NOT_DEF(Tag.DMN_VALIDATION)                // DUPS of TYPE_DEF_NOT_FOUND ?
     ;
     
     private Tag[] tags;

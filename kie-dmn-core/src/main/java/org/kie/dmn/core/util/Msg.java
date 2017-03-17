@@ -4,12 +4,12 @@ import org.kie.dmn.api.core.DMNMessageType;
 
 public class Msg {
     public static final Message2 UNSUPPORTED_ELEMENT             = new Message2( DMNMessageType.UNSUPPORTED_ELEMENT, "Element %s with type='%s' is not supported.");
-    public static final Message2 REQ_INPUT_NOT_FOUND_FOR_NODE    = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required input '%s' not found for node '%s'");
-    public static final Message2 REQ_DECISION_NOT_FOUND_FOR_NODE = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required Decision '%s' not found for node '%s'");
-    public static final Message2 REQ_BKM_NOT_FOUND_FOR_NODE      = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required Business Knowledge Model '%s' not found for node '%s'");
-    public static final Message2 UNKNOWN_TYPE_REF_ON_NODE = new Message2( DMNMessageType.NO_TYPE_REF_FOUND, "Unknown type reference '%s' on node '%s'");
-    public static final Message2 NO_TYPE_DEF_FOUND_FOR_NODE = new Message2( DMNMessageType.NO_TYPE_DEF_FOUND, "No '%s' type definition found for node '%s'");
-    public static final Message3 NO_TYPE_DEF_FOUND_FOR_ELEMENT_ON_NODE = new Message3( DMNMessageType.NO_TYPE_DEF_FOUND, "No '%s' type definition found for element '%s' on node '%s'");
+    public static final Message2 REQ_INPUT_NOT_FOUND_FOR_NODE    = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required input '%s' not found on node '%s'");
+    public static final Message2 REQ_DECISION_NOT_FOUND_FOR_NODE = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required Decision '%s' not found on node '%s'");
+    public static final Message2 REQ_BKM_NOT_FOUND_FOR_NODE      = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required Business Knowledge Model '%s' not found on node '%s'");
+    public static final Message2 UNKNOWN_TYPE_REF_ON_NODE = new Message2( DMNMessageType.TYPE_REF_NOT_FOUND, "Type reference '%s' not found on node '%s'");
+    public static final Message2 NO_TYPE_DEF_FOUND_FOR_NODE = new Message2( DMNMessageType.TYPE_DEF_NOT_FOUND, "No '%s' type definition found on node '%s'");
+    public static final Message3 NO_TYPE_DEF_FOUND_FOR_ELEMENT_ON_NODE = new Message3( DMNMessageType.TYPE_DEF_NOT_FOUND, "No '%s' type definition found for element '%s' on node '%s'");
     public static final Message2 INVALID_NAME_VARIABLENAME = new Message2( DMNMessageType.INVALID_NAME, "Invalid name '%s': %s");
     public static final Message1 INVALID_SYNTAX = new Message1( DMNMessageType.INVALID_SYNTAX, "%s: invalid syntax");
     public static final Message2 INVALID_SYNTAX2 = new Message2( DMNMessageType.INVALID_SYNTAX, "%s: %s");
