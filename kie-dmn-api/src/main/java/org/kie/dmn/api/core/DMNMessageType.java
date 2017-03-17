@@ -1,8 +1,9 @@
 package org.kie.dmn.api.core;
 
 public enum DMNMessageType {
-    ELEMENT_WITH_ID_NOT_SUPPORTED(Tag.DMN_CORE),                // compilation
-    REQ_NOT_FOUND(Tag.DMN_CORE),                                // compilation
+    UNSUPPORTED_ELEMENT( Tag.COMPILATION, Tag.DMN_CORE),
+    REQ_NOT_FOUND( Tag.COMPILATION, Tag.DMN_CORE),
+
     NO_TYPE_REF_FOUND(Tag.DMN_CORE),                            // dups?
     NO_TYPE_DEF_FOUND(Tag.DMN_CORE),                            // dups?
     INVALID_NAME(Tag.DMN_CORE),                                 // dups?
@@ -59,7 +60,7 @@ public enum DMNMessageType {
     }
 
     public enum Tag {
-        DMN_CORE, DMN_VALIDATION;
+        DMN_CORE, DMN_VALIDATION, VALIDATION, COMPILATION, RUNTIME
     }
 
 }

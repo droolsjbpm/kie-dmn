@@ -141,7 +141,7 @@ public class DMNCompilerImpl
                                        model,
                                        null,
                                        null,
-                                       Msg.ELEMENT_WITH_ID_NOT_SUPPORTED,
+                                       Msg.UNSUPPORTED_ELEMENT,
                                        e.getClass().getSimpleName(),
                                        e.getId() );
             }

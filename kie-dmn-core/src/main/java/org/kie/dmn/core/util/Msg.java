@@ -3,10 +3,10 @@ package org.kie.dmn.core.util;
 import org.kie.dmn.api.core.DMNMessageType;
 
 public class Msg {
-    public static final Message2 ELEMENT_WITH_ID_NOT_SUPPORTED = new Message2( DMNMessageType.ELEMENT_WITH_ID_NOT_SUPPORTED, "Element %s with type='%s' not supported.");
-    public static final Message2 REQ_INPUT_NOT_FOUND_FOR_NODE = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required input '%s' not found for node '%s'");
+    public static final Message2 UNSUPPORTED_ELEMENT             = new Message2( DMNMessageType.UNSUPPORTED_ELEMENT, "Element %s with type='%s' is not supported.");
+    public static final Message2 REQ_INPUT_NOT_FOUND_FOR_NODE    = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required input '%s' not found for node '%s'");
     public static final Message2 REQ_DECISION_NOT_FOUND_FOR_NODE = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required Decision '%s' not found for node '%s'");
-    public static final Message2 REQ_BKM_NOT_FOUND_FOR_NODE = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required Business Knowledge Model '%s' not found for node '%s'");
+    public static final Message2 REQ_BKM_NOT_FOUND_FOR_NODE      = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required Business Knowledge Model '%s' not found for node '%s'");
     public static final Message2 UNKNOWN_TYPE_REF_ON_NODE = new Message2( DMNMessageType.NO_TYPE_REF_FOUND, "Unknown type reference '%s' on node '%s'");
     public static final Message2 NO_TYPE_DEF_FOUND_FOR_NODE = new Message2( DMNMessageType.NO_TYPE_DEF_FOUND, "No '%s' type definition found for node '%s'");
     public static final Message3 NO_TYPE_DEF_FOUND_FOR_ELEMENT_ON_NODE = new Message3( DMNMessageType.NO_TYPE_DEF_FOUND, "No '%s' type definition found for element '%s' on node '%s'");
