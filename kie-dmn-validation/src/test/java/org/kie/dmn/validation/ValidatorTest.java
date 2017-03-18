@@ -63,13 +63,13 @@ public class ValidatorTest {
         Definitions definitions = dmnModel.getDefinitions();
         assertThat( definitions, notNullValue() );
         
-        DMNValidatorFactory.newValidator().validateModel(definitions);
+        DMNValidatorFactory.newValidator().validate(definitions);
     }
     
     private Definitions utilDefinitions(String filename, String modelName) {
         List<DMNMessage> validateXML;
         try {
-            validateXML = validator.validateSchema( new File(this.getClass().getResource(filename).toURI()) );
+            validateXML = validator.validate( new File(this.getClass().getResource(filename).toURI()), DMNValidator.Validation.VALIDATE_SCHEMA );
             assertThat( "using unit test method utilDefinitions must received a XML valid DMN file", validateXML, IsEmptyCollection.empty() );
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -90,7 +90,7 @@ public class ValidatorTest {
         
     @Test
     public void testInvalidXml() throws URISyntaxException {
-        List<DMNMessage> validateXML = validator.validateSchema(new File(this.getClass().getResource( "invalidXml.dmn" ).toURI()));
+        List<DMNMessage> validateXML = validator.validate( new File(this.getClass().getResource( "invalidXml.dmn" ).toURI()), DMNValidator.Validation.VALIDATE_SCHEMA);
         assertTrue( !validateXML.isEmpty() );
         
         validateXML.forEach(System.err::println);
@@ -98,7 +98,7 @@ public class ValidatorTest {
     
     @Test
     public void testTYPEREF_NO_NS() throws URISyntaxException {
-        List<DMNMessage> validateXML = validator.validateSchema(new File(this.getClass().getResource( "TYPEREF_NO_NS.dmn" ).toURI()));
+        List<DMNMessage> validateXML = validator.validate( new File(this.getClass().getResource( "TYPEREF_NO_NS.dmn" ).toURI()), DMNValidator.Validation.VALIDATE_SCHEMA);
         assertTrue( !validateXML.isEmpty() );
         
         validateXML.forEach(System.err::println);
@@ -107,7 +107,7 @@ public class ValidatorTest {
     @Test
     public void testBKM_MISSING_EXPR() {
         Definitions definitions = utilDefinitions( "BKM_MISSING_EXPR.dmn", "BKM_MISSING_EXPR" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.BKM_MISSING_EXPR ) ) );
     }
@@ -115,7 +115,7 @@ public class ValidatorTest {
     @Test
     public void testBKM_MISSING_VAR() {
         Definitions definitions = utilDefinitions( "BKM_MISSING_VAR.dmn", "BKM_MISSING_VAR" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.BKM_MISSING_VAR ) ) );
     }
@@ -123,7 +123,7 @@ public class ValidatorTest {
     @Test
     public void testCONTEXT_DUP_ENTRY() {
         Definitions definitions = utilDefinitions( "CONTEXT_DUP_ENTRY.dmn", "CONTEXT_DUP_ENTRY" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.CONTEXT_DUP_ENTRY ) ) );
     }
@@ -131,7 +131,7 @@ public class ValidatorTest {
     @Test
     public void testCONTEXT_ENTRY_NOTYPEREF() {
         Definitions definitions = utilDefinitions( "CONTEXT_ENTRY_NOTYPEREF.dmn", "CONTEXT_ENTRY_NOTYPEREF" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.CONTEXT_ENTRY_NOTYPEREF ) ) );
     }
@@ -139,7 +139,7 @@ public class ValidatorTest {
     @Test
     public void testDECISION_MISSING_EXPR() {
         Definitions definitions = utilDefinitions( "DECISION_MISSING_EXPR.dmn", "DECISION_MISSING_EXPR" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DECISION_MISSING_EXPR ) ) );
     }
@@ -147,7 +147,7 @@ public class ValidatorTest {
     @Test
     public void testDECISION_MISSING_VAR() {
         Definitions definitions = utilDefinitions( "DECISION_MISSING_VAR.dmn", "DECISION_MISSING_VAR" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertEquals(1, validate.stream().filter( p -> p.getMessageType().equals( DMNMessageType.DECISION_MISSING_VAR )).count() );
         
@@ -162,7 +162,7 @@ public class ValidatorTest {
     @Test
     public void testDECISION_MISSING_VARbis() {
         Definitions definitions = utilDefinitions( "DECISION_MISSING_VARbis.dmn", "DECISION_MISSING_VARbis" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DECISION_MISSING_VAR ) ) );
     }
@@ -170,7 +170,7 @@ public class ValidatorTest {
     @Test
     public void testDRGELEM_NOT_UNIQUE() {
         Definitions definitions = utilDefinitions( "DRGELEM_NOT_UNIQUE.dmn", "DRGELEM_NOT_UNIQUE" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DRGELEM_NOT_UNIQUE ) ) );
     }
@@ -178,7 +178,7 @@ public class ValidatorTest {
     @Test
     public void testDTABLE_MULTIPLEOUT_NAME() {
         Definitions definitions = utilDefinitions( "DTABLE_MULTIPLEOUTPUT_WRONG_OUTPUT.dmn", "DTABLE_MULTIPLEOUTPUT_WRONG_OUTPUT" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DTABLE_MULTIPLEOUT_NAME ) ) );
     }
@@ -186,7 +186,7 @@ public class ValidatorTest {
     @Test
     public void testDTABLE_MULTIPLEOUT_TYPEREF() {
         Definitions definitions = utilDefinitions( "DTABLE_MULTIPLEOUTPUT_WRONG_OUTPUT.dmn", "DTABLE_MULTIPLEOUTPUT_WRONG_OUTPUT" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DTABLE_MULTIPLEOUT_TYPEREF ) ) );
     }
@@ -194,7 +194,7 @@ public class ValidatorTest {
     @Test
     public void testDTABLE_PRIORITY_MISSING_OUTVALS() {
         Definitions definitions = utilDefinitions( "DTABLE_PRIORITY_MISSING_OUTVALS.dmn", "DTABLE_PRIORITY_MISSING_OUTVALS" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DTABLE_PRIORITY_MISSING_OUTVALS ) ) );
     }
@@ -202,7 +202,7 @@ public class ValidatorTest {
     @Test
     public void testDTABLE_SINGLEOUT_NONAME() {
         Definitions definitions = utilDefinitions( "DTABLE_SINGLEOUTPUT_WRONG_OUTPUT.dmn", "DTABLE_SINGLEOUTPUT_WRONG_OUTPUT" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DTABLE_SINGLEOUT_NONAME ) ) );
     }
@@ -210,7 +210,7 @@ public class ValidatorTest {
     @Test
     public void testDTABLE_SINGLEOUT_NOTYPEREF() {
         Definitions definitions = utilDefinitions( "DTABLE_SINGLEOUTPUT_WRONG_OUTPUT.dmn", "DTABLE_SINGLEOUTPUT_WRONG_OUTPUT" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DTABLE_SINGLEOUT_NOTYPEREF ) ) );
     }
@@ -218,7 +218,7 @@ public class ValidatorTest {
     @Test
     public void testELEMREF_MISSING_TARGET() {
         Definitions definitions = utilDefinitions( "ELEMREF_MISSING_TARGET.dmn", "ELEMREF_MISSING_TARGET" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
 
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.ELEMREF_MISSING_TARGET ) ) );
     }
@@ -226,7 +226,7 @@ public class ValidatorTest {
     @Test
     public void testELEMREF_NOHASH() {
         Definitions definitions = utilDefinitions( "ELEMREF_NOHASH.dmn", "ELEMREF_NOHASH" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
 
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.ELEMREF_NOHASH ) ) );
     }
@@ -234,7 +234,7 @@ public class ValidatorTest {
     @Test
     public void testFORMAL_PARAM_DUPLICATED() {
         Definitions definitions = utilDefinitions( "FORMAL_PARAM_DUPLICATED.dmn", "FORMAL_PARAM_DUPLICATED" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.FORMAL_PARAM_DUPLICATED ) ) );
     }
@@ -242,7 +242,7 @@ public class ValidatorTest {
     @Test
     public void testINPUTDATA_MISSING_VAR() {
         Definitions definitions = utilDefinitions( "INPUTDATA_MISSING_VAR.dmn", "INPUTDATA_MISSING_VAR" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.INPUTDATA_MISSING_VAR ) ) );
     }
@@ -250,7 +250,7 @@ public class ValidatorTest {
     @Test
     public void testINVOCATION_INCONSISTENT_PARAM_NAMES() {
         Definitions definitions = utilDefinitions( "INVOCATION_INCONSISTENT_PARAM_NAMES.dmn", "INVOCATION_INCONSISTENT_PARAM_NAMES" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.INVOCATION_INCONSISTENT_PARAM_NAMES ) ) );
     }
@@ -258,7 +258,7 @@ public class ValidatorTest {
     @Test
     public void testINVOCATION_MISSING_TARGET() {
         Definitions definitions = utilDefinitions( "INVOCATION_MISSING_TARGET.dmn", "INVOCATION_MISSING_TARGET" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.INVOCATION_MISSING_TARGET ) ) );
     }
@@ -267,7 +267,7 @@ public class ValidatorTest {
     @Test
     public void testINVOCATION_MISSING_TARGETRbis() {
         Definitions definitions = utilDefinitions( "INVOCATION_MISSING_TARGETbis.dmn", "INVOCATION_MISSING_TARGETbis" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.INVOCATION_MISSING_TARGET ) ) );
     }
@@ -275,7 +275,7 @@ public class ValidatorTest {
     @Test
     public void testINVOCATION_WRONG_PARAM_COUNT() {
         Definitions definitions = utilDefinitions( "INVOCATION_WRONG_PARAM_COUNT.dmn", "INVOCATION_WRONG_PARAM_COUNT" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.INVOCATION_WRONG_PARAM_COUNT ) ) );
     }
@@ -283,7 +283,7 @@ public class ValidatorTest {
     @Test
     public void testITEMCOMP_DUPLICATED() {
         Definitions definitions = utilDefinitions( "ITEMCOMP_DUPLICATED.dmn", "ITEMCOMP_DUPLICATED" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.ITEMCOMP_DUPLICATED ) ) );
     }
@@ -291,7 +291,7 @@ public class ValidatorTest {
     @Test
     public void testITEMDEF_NOT_UNIQUE() {
         Definitions definitions = utilDefinitions( "ITEMDEF_NOT_UNIQUE.dmn", "ITEMDEF_NOT_UNIQUE" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.ITEMDEF_NOT_UNIQUE ) ) );
     }
@@ -300,7 +300,7 @@ public class ValidatorTest {
     public void testITEMDEF_NOT_UNIQUE_DROOLS_1450() {
         // DROOLS-1450
         Definitions definitions = utilDefinitions( "ITEMDEF_NOT_UNIQUE_DROOLS-1450.dmn", "ITEMDEF_NOT_UNIQUE" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertFalse( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.ITEMDEF_NOT_UNIQUE ) ) );
     }
@@ -308,7 +308,7 @@ public class ValidatorTest {
     @Test
     public void testNAME_INVALID() {
         Definitions definitions = utilDefinitions( "NAME_INVALID.dmn", "NAME_INVALID" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.NAME_INVALID ) ) );
     }
@@ -316,7 +316,7 @@ public class ValidatorTest {
     @Test
     public void testNAME_INVALID_bis() {
         Definitions definitions = utilDefinitions( "NAME_INVALID_bis.dmn", "code in list of codes" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.NAME_INVALID ) ) );
         
@@ -331,7 +331,7 @@ public class ValidatorTest {
     @Test
     public void testRELATION_DUP_COLUMN() {
         Definitions definitions = utilDefinitions( "RELATION_DUP_COLUMN.dmn", "RELATION_DUP_COLUMN" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.RELATION_DUP_COLUMN ) ) );
     }
@@ -339,7 +339,7 @@ public class ValidatorTest {
     @Test
     public void testRELATION_ROW_CELL_NOTLITERAL() {
         Definitions definitions = utilDefinitions( "RELATION_ROW_CELL_NOTLITERAL.dmn", "RELATION_ROW_CELL_NOTLITERAL" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.RELATION_ROW_CELL_NOTLITERAL ) ) );
     }
@@ -347,7 +347,7 @@ public class ValidatorTest {
     @Test
     public void testRELATION_ROW_CELLCOUNTMISMATCH() {
         Definitions definitions = utilDefinitions( "RELATION_ROW_CELLCOUNTMISMATCH.dmn", "RELATION_ROW_CELLCOUNTMISMATCH" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.RELATION_ROW_CELLCOUNTMISMATCH ) ) );
     }
@@ -355,7 +355,7 @@ public class ValidatorTest {
     @Test
     public void testREQAUTH_NOT_KNOWLEDGESOURCE() {
         Definitions definitions = utilDefinitions( "REQAUTH_NOT_KNOWLEDGESOURCE.dmn", "REQAUTH_NOT_KNOWLEDGESOURCE" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
 
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.REQAUTH_NOT_KNOWLEDGESOURCE ) ) );
     }
@@ -364,7 +364,7 @@ public class ValidatorTest {
     public void testREQAUTH_NOT_KNOWLEDGESOURCEbis() {
         // DROOLS-1435
         Definitions definitions = utilDefinitions( "REQAUTH_NOT_KNOWLEDGESOURCEbis.dmn", "REQAUTH_NOT_KNOWLEDGESOURCEbis" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
 
         // this test should just pass without any NPE:
         assertTrue( validate.size() > 0 );
@@ -373,7 +373,7 @@ public class ValidatorTest {
     @Test
     public void testTYPEREF_NO_FEEL_TYPE() {
         Definitions definitions = utilDefinitions( "TYPEREF_NO_FEEL_TYPE.dmn", "TYPEREF_NO_FEEL_TYPE" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
 
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.TYPEREF_NO_FEEL_TYPE ) ) );
     }
@@ -381,7 +381,7 @@ public class ValidatorTest {
     @Test
     public void testTYPEREF_NOT_FEEL_NOT_DEF() {
         Definitions definitions = utilDefinitions( "TYPEREF_NOT_FEEL_NOT_DEF.dmn", "TYPEREF_NOT_FEEL_NOT_DEF" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
 
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.TYPEREF_NOT_FEEL_NOT_DEF ) ) );
     }
@@ -392,7 +392,7 @@ public class ValidatorTest {
         // the assumption is that the following document TYPEREF_NOT_FEEL_NOT_DEF_valid.dmn should NOT contain any DMNMessageTypeId.TYPEREF_NOT_FEEL_NOT_DEF at all
         // the test also highlight typically in a DMN model many nodes would not define a typeRef, resulting in a large number of false negative
         Definitions definitions = utilDefinitions( "TYPEREF_NOT_FEEL_NOT_DEF_valid.dmn", "TYPEREF_NOT_FEEL_NOT_DEF_valid" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
 
         validate.forEach(m -> System.out.println( m.getMessage()) );
         
@@ -407,7 +407,7 @@ public class ValidatorTest {
         assertFalse( FEELParser.isVariableNameValid("")   );
         
         Definitions definitions = utilDefinitions( "DROOLS-1447.dmn", "DROOLS-1447" );
-        List<DMNMessage> validate = validator.validateModel(definitions);
+        List<DMNMessage> validate = validator.validate(definitions);
 
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.NAME_INVALID ) ) );
     }

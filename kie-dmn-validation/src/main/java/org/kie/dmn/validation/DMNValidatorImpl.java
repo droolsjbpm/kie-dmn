@@ -16,38 +16,37 @@
 
 package org.kie.dmn.validation;
 
-import static java.util.stream.Collectors.*;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
+import org.drools.core.util.Drools;
+import org.kie.api.KieServices;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.StatelessKieSession;
+import org.kie.dmn.api.core.DMNCompiler;
+import org.kie.dmn.api.core.DMNMessage;
+import org.kie.dmn.api.core.DMNModel;
+import org.kie.dmn.backend.marshalling.v1_1.DMNMarshallerFactory;
+import org.kie.dmn.core.compiler.DMNCompilerImpl;
+import org.kie.dmn.core.impl.DMNMessageImpl;
+import org.kie.dmn.core.util.KieHelper;
+import org.kie.dmn.core.util.MsgUtil;
+import org.kie.dmn.model.v1_1.DMNModelInstrumentedBase;
+import org.kie.dmn.model.v1_1.Definitions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import java.io.*;
+import java.util.*;
+import java.util.stream.Stream;
 
-import org.drools.core.util.Drools;
-import org.kie.api.KieServices;
-import org.kie.api.builder.KieBuilder;
-import org.kie.api.builder.Message;
-import org.kie.api.builder.Message.Level;
-import org.kie.api.builder.Results;
-import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.StatelessKieSession;
-import org.kie.dmn.api.core.DMNMessage;
-import org.kie.dmn.core.impl.DMNMessageImpl;
-import org.kie.dmn.core.util.MsgUtil;
-import org.kie.dmn.model.v1_1.DMNModelInstrumentedBase;
-import org.kie.dmn.model.v1_1.Definitions;
-import org.kie.dmn.core.util.KieHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
+import static java.util.stream.Collectors.toList;
+import static org.kie.dmn.validation.DMNValidator.Validation.VALIDATE_COMPILATION;
+import static org.kie.dmn.validation.DMNValidator.Validation.VALIDATE_MODEL;
+import static org.kie.dmn.validation.DMNValidator.Validation.VALIDATE_SCHEMA;
 
 public class DMNValidatorImpl implements DMNValidator {
     public static Logger LOG = LoggerFactory.getLogger(DMNValidatorImpl.class);
@@ -91,20 +90,99 @@ public class DMNValidatorImpl implements DMNValidator {
     }
 
     @Override
-    public List<DMNMessage> validateSchema(File xmlFile) {
-        List<DMNMessage> problems = new ArrayList<>();
+    public List<DMNMessage> validate(Definitions dmnModel) {
+        return validate( dmnModel, VALIDATE_MODEL );
+    }
+
+    @Override
+    public List<DMNMessage> validate(Definitions dmnModel, Validation... options) {
+        List<DMNMessage> results = new ArrayList<>(  );
+        EnumSet<Validation> flags = EnumSet.copyOf( Arrays.asList( options ) );
+        if( flags.contains( VALIDATE_SCHEMA ) ) {
+            throw new IllegalArgumentException( "Schema validation not supported for in memory object. Please use the validate method with the file or reader signature." );
+        }
+        validateModelCompilation( dmnModel, results, flags );
+        return results;
+    }
+
+    @Override
+    public List<DMNMessage> validate(File xmlFile) {
+        return validate( xmlFile, VALIDATE_MODEL );
+    }
+
+    @Override
+    public List<DMNMessage> validate(File xmlFile, Validation... options) {
+        List<DMNMessage> results = new ArrayList<>(  );
+        EnumSet<Validation> flags = EnumSet.copyOf( Arrays.asList( options ) );
+        if( flags.contains( VALIDATE_SCHEMA ) ) {
+            results.addAll( validateSchema( xmlFile ) );
+        }
+        if( flags.contains( VALIDATE_MODEL ) || flags.contains( VALIDATE_COMPILATION ) ) {
+            Definitions dmndefs = null;
+            try {
+                dmndefs = DMNMarshallerFactory.newDefaultMarshaller().unmarshal( new FileReader( xmlFile ) );
+                validateModelCompilation( dmndefs, results, flags );
+            } catch ( FileNotFoundException e ) {
+                LOG.error( "Error reading file {}. Unable to validate it.", xmlFile.getAbsolutePath(), e );
+                throw new IllegalArgumentException( "Error reading file "+xmlFile.getAbsolutePath(), e );
+            }
+        }
+        logDebugMessages( results );
+        return results;
+    }
+
+    @Override
+    public List<DMNMessage> validate(Reader reader) {
+        return validate( reader, VALIDATE_MODEL );
+    }
+
+    @Override
+    public List<DMNMessage> validate(Reader reader, Validation... options) {
+        List<DMNMessage> results = new ArrayList<>(  );
+        EnumSet<Validation> flags = EnumSet.copyOf( Arrays.asList( options ) );
+        if( flags.contains( VALIDATE_SCHEMA ) ) {
+            results.addAll( validateSchema( reader ) );
+        }
+        if( flags.contains( VALIDATE_MODEL ) || flags.contains( VALIDATE_COMPILATION ) ) {
+            Definitions dmndefs = DMNMarshallerFactory.newDefaultMarshaller().unmarshal( reader );
+            validateModelCompilation( dmndefs, results, flags );
+        }
+        logDebugMessages( results );
+        return results;
+    }
+
+    private void validateModelCompilation(Definitions dmnModel, List<DMNMessage> results, EnumSet<Validation> flags) {
+        if( flags.contains( VALIDATE_MODEL ) ) {
+            results.addAll( validateModel( dmnModel ) );
+        }
+        if( flags.contains( VALIDATE_COMPILATION ) ) {
+            results.addAll( validateCompilation( dmnModel ) );
+        }
+    }
+
+    private List<DMNMessage> validateSchema(File xmlFile) {
         Source s = new StreamSource(xmlFile);
+        return validateSchema( s );
+    }
+
+    private List<DMNMessage> validateSchema(Reader reader) {
+        Source s = new StreamSource(reader);
+        return validateSchema( s );
+    }
+
+    private List<DMNMessage> validateSchema(Source s) {
+        List<DMNMessage> problems = new ArrayList<>();
         try {
             schema.newValidator().validate(s);
         } catch (SAXException | IOException e) {
-            problems.add(new DMNMessageImpl(DMNMessage.Severity.ERROR, MsgUtil.createMessage(Msg.FAILED_XML_VALIDATION), Msg.FAILED_VALIDATOR.getType(), null, e));
+            problems.add(new DMNMessageImpl( DMNMessage.Severity.ERROR, MsgUtil.createMessage( Msg.FAILED_XML_VALIDATION), Msg.FAILED_VALIDATOR.getType(), null, e));
+            logDebugMessages( problems );
         }
         // TODO detect if the XSD is not provided through schemaLocation, and validate against embedded
         return problems;
     }
-    
-    @Override
-    public List<DMNMessage> validateModel(Definitions dmnModel) {
+
+    private List<DMNMessage> validateModel(Definitions dmnModel) {
         if (!kieContainer.isPresent()) {
             return failedInitMsg;
         }
@@ -115,36 +193,32 @@ public class DMNValidatorImpl implements DMNValidator {
         
         kieSession.execute(allChildren(dmnModel).collect(toList()));
 
-        if ( LOG.isDebugEnabled() ) {
-            for ( DMNMessage m : reporter.getMessages() ) {
-                LOG.debug("{}", m);
-            }
-        }
-        
         return reporter.getMessages();
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Stream<T> allChildren(DMNModelInstrumentedBase root, Class<T> clazz) {
-        return (Stream<T>) allChildren(root)
-                .filter(dmn -> clazz.isInstance(dmn) )
-                ;
+    private List<DMNMessage> validateCompilation(Definitions dmnModel) {
+        if( dmnModel != null ) {
+            DMNCompiler compiler = new DMNCompilerImpl();
+            DMNModel model = compiler.compile( dmnModel );
+            if( model != null ) {
+                return model.getMessages();
+            } else {
+                LOG.error( "Compilation failed for model {}. Unable to validate compilation.", dmnModel.getName() );
+            }
+        }
+        return Collections.emptyList();
     }
-    
-    public static Stream<DMNModelInstrumentedBase> allChildren(DMNModelInstrumentedBase root) {
+
+    private static Stream<DMNModelInstrumentedBase> allChildren(DMNModelInstrumentedBase root) {
         return Stream.concat( Stream.of(root),
                               root.getChildren().stream().flatMap(DMNValidatorImpl::allChildren) );
     }
-    
-    @Deprecated
-    public static List<DMNModelInstrumentedBase> allChildrenClassic(DMNModelInstrumentedBase root) {
-        List<DMNModelInstrumentedBase> result = new ArrayList<>();
-        for ( DMNModelInstrumentedBase c : root.getChildren() ) {
-            result.add(c);
-            result.addAll(allChildrenClassic(c));
+
+    private void logDebugMessages(List<DMNMessage> messages) {
+        if ( LOG.isDebugEnabled() ) {
+            for ( DMNMessage m : messages ) {
+                LOG.debug("{}", m);
+            }
         }
-        return result;
     }
-
-
 }

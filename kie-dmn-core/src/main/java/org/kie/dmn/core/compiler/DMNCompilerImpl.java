@@ -73,18 +73,26 @@ public class DMNCompilerImpl
     public DMNModel compile(Reader source) {
         try {
             Definitions dmndefs = DMNMarshallerFactory.newDefaultMarshaller().unmarshal( source );
-            if ( dmndefs != null ) {
-                DMNModelImpl model = new DMNModelImpl( dmndefs );
-                DMNCompilerContext ctx = new DMNCompilerContext();
-
-                processItemDefinitions( ctx, feel, model, dmndefs );
-                processDrgElements( ctx, feel, model, dmndefs );
-                return model;
-            }
+            DMNModel model = compile( dmndefs );
+            return model;
         } catch ( Exception e ) {
             logger.error( "Error compiling model from source.", e );
         }
         return null;
+    }
+
+    @Override
+    public DMNModel compile(Definitions dmndefs) {
+        DMNModelImpl model = null;
+        if ( dmndefs != null ) {
+            model = new DMNModelImpl( dmndefs );
+            DMNCompilerContext ctx = new DMNCompilerContext();
+
+            processItemDefinitions( ctx, feel, model, dmndefs );
+            processDrgElements( ctx, feel, model, dmndefs );
+            return model;
+        }
+        return model;
     }
 
     private void processItemDefinitions(DMNCompilerContext ctx, DMNFEELHelper feel, DMNModelImpl model, Definitions dmndefs) {
