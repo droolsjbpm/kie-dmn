@@ -175,7 +175,7 @@ public class DMNValidatorImpl implements DMNValidator {
         try {
             schema.newValidator().validate(s);
         } catch (SAXException | IOException e) {
-            problems.add(new DMNMessageImpl( DMNMessage.Severity.ERROR, MsgUtil.createMessage( Msg.FAILED_XML_VALIDATION), Msg.FAILED_VALIDATOR.getType(), null, e));
+            problems.add(new DMNMessageImpl( DMNMessage.Severity.ERROR, MsgUtil.createMessage( Msg.FAILED_XML_VALIDATION), Msg.FAILED_XML_VALIDATION.getType(), null, e));
             logDebugMessages( problems );
         }
         // TODO detect if the XSD is not provided through schemaLocation, and validate against embedded
