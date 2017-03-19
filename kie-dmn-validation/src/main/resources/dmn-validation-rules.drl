@@ -92,6 +92,19 @@ then
     reporter.report( DMNMessage.Severity.ERROR,  $d , Msg.VARIABLE_NAME_MISMATCH_FOR_INPUT, $d.getVariable().getName(), $d.getName() );
 end
 
+rule NAME_INVALID
+when
+    $ne : NamedElement( parent != null,
+                        // the following constraint prevents duplicate reporting due to variables having the same name as their enclosing nodes
+                        !( parent instanceof NamedElement ) || (((NamedElement)parent).name != name ),
+                        !FEELParser.isVariableNameValid( name ) )
+then
+    java.util.List<FEELEvent> errors = FEELParser.checkVariableName( $ne.getName() );
+    if ( ! errors.isEmpty() ) {
+        reporter.report( DMNMessage.Severity.ERROR,  $ne , Msg.INVALID_NAME, $ne.getName(), errors.get( 0 ).getMessage() );
+    }
+end
+
 rule CONTEXT_DUP_ENTRY
 when
   $ce1 : ContextEntry( parent instanceof Context )
@@ -231,16 +244,6 @@ then
   reporter.report( DMNMessage.Severity.ERROR,  $x , Msg.ITEMDEF_NOT_UNIQUE );
 end
 
-rule NAME_INVALID
-when
-    $ne : NamedElement( parent != null, !(parent instanceof DRGElement),                       // << functional optimization to avoid double reporting as Decision name == variable name 
-                        FEELParser.isVariableNameValid( name ) == false )
-then
-//    java.util.List<FEELEvent> see = FEELParser.checkVariableName( $ne.getName() );
-//    String customMessage = see.isEmpty()? Msg.NAME_INVALID : see.get(0).getMessage()
-    reporter.report( DMNMessage.Severity.ERROR,  $ne , Msg.NAME_INVALID );
-end
-
 rule RELATION_DUP_COLUMN
 when
   $c1 : InformationItem( parent instanceof Relation )
@@ -304,7 +307,7 @@ when
   $o: Expression( typeRef != null, typeRef.prefix == null || getNamespaceURI( typeRef.prefix ) != DMNModelInstrumentedBase.URI_FEEL, $typeRef : typeRef )
   not( ItemDefinition( name == $typeRef ) )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $o , Msg.TYPEREF_NOT_FEEL_NOT_DEF );
+  reporter.report( DMNMessage.Severity.ERROR,  $o , Msg.UNKNOWN_TYPE_REF_ON_NODE, $typeRef, $o.getParentDRGElement().getIdentifierString() );
 end
 
 rule TYPEREF_NOT_FEEL_NOT_DEF_p2
@@ -312,7 +315,7 @@ when
   $o: InformationItem( typeRef != null, typeRef.prefix == null || getNamespaceURI( typeRef.prefix ) != DMNModelInstrumentedBase.URI_FEEL, $typeRef : typeRef )
   not( ItemDefinition( name == $typeRef ) )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $o , Msg.TYPEREF_NOT_FEEL_NOT_DEF );
+  reporter.report( DMNMessage.Severity.ERROR,  $o , Msg.UNKNOWN_TYPE_REF_ON_NODE, $typeRef, $o.getParentDRGElement().getIdentifierString() );
 end
 
 rule TYPEREF_NOT_FEEL_NOT_DEF_p3
@@ -320,7 +323,7 @@ when
   $o: ItemDefinition( typeRef != null, typeRef.prefix == null || getNamespaceURI( typeRef.prefix ) != DMNModelInstrumentedBase.URI_FEEL, $typeRef : typeRef )
   not( ItemDefinition( name == $typeRef ) )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $o , Msg.TYPEREF_NOT_FEEL_NOT_DEF );
+  reporter.report( DMNMessage.Severity.ERROR,  $o , Msg.UNKNOWN_TYPE_REF_ON_NODE, $typeRef, $o.getParentDRGElement().getIdentifierString() );
 end
 
 rule TYPEREF_NOT_FEEL_NOT_DEF_p4
@@ -328,5 +331,5 @@ when
   $o: OutputClause( typeRef != null, typeRef.prefix == null || getNamespaceURI( typeRef.prefix ) != DMNModelInstrumentedBase.URI_FEEL, $typeRef : typeRef )
   not( ItemDefinition( name == $typeRef ) )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $o , Msg.TYPEREF_NOT_FEEL_NOT_DEF );
+  reporter.report( DMNMessage.Severity.ERROR,  $o , Msg.UNKNOWN_TYPE_REF_ON_NODE, $typeRef, $o.getParentDRGElement().getIdentifierString() );
 end

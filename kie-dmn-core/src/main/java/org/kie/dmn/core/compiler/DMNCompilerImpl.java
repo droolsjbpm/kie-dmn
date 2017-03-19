@@ -111,7 +111,7 @@ public class DMNCompilerImpl
                 InputData input = (InputData) e;
                 InputDataNodeImpl idn = new InputDataNodeImpl( input );
                 if ( input.getVariable() != null ) {
-                    DMNCompilerHelper.checkVariableName( model, input, input.getVariable().getName() );
+                    DMNCompilerHelper.checkVariableName( model, input, input.getName() );
                     DMNType type = resolveTypeRef( model, idn, e, input.getVariable(), input.getVariable().getTypeRef() );
                     idn.setType( type );
                 } else {
@@ -127,7 +127,7 @@ public class DMNCompilerImpl
                     reportMissingVariable( model, e, decision, Msg.MISSING_VARIABLE_FOR_DECISION );
                     continue;
                 }
-                DMNCompilerHelper.checkVariableName( model, decision, decision.getVariable() != null ? decision.getVariable().getName() : null );
+                DMNCompilerHelper.checkVariableName( model, decision, decision.getName() );
                 if ( decision.getVariable() != null && decision.getVariable().getTypeRef() != null ) {
                     type = resolveTypeRef( model, dn, decision, decision.getVariable(), decision.getVariable().getTypeRef() );
                 } else {
@@ -143,7 +143,7 @@ public class DMNCompilerImpl
                     reportMissingVariable( model, e, bkm, Msg.MISSING_VARIABLE_FOR_BKM );
                     continue;
                 }
-                DMNCompilerHelper.checkVariableName( model, bkm, bkm.getVariable() != null ? bkm.getVariable().getName() : null );
+                DMNCompilerHelper.checkVariableName( model, bkm, bkm.getName() );
                 if ( bkm.getVariable() != null && bkm.getVariable().getTypeRef() != null ) {
                     type = resolveTypeRef( model, bkmn, bkm, bkm.getVariable(), bkm.getVariable().getTypeRef() );
                 } else {
@@ -369,28 +369,15 @@ public class DMNCompilerImpl
                     }
                 }
             } else if( type == null ) {
-                if ( model.getName() != null && node.getName() != null && model.getName().equals( node.getName() ) ) {
-                    MsgUtil.reportMessage( logger,
-                                           DMNMessage.Severity.ERROR,
-                                           ((DMNBaseNode)node).getSource(),
-                                           dmnModel,
-                                           null,
-                                           null,
-                                           Msg.NO_TYPE_DEF_FOUND_FOR_NODE,
-                                           typeRef.toString(),
-                                           node.getName() );
-                } else {
-                    MsgUtil.reportMessage( logger,
-                                           DMNMessage.Severity.ERROR,
-                                           ((DMNBaseNode)node).getSource(),
-                                           dmnModel,
-                                           null,
-                                           null,
-                                           Msg.NO_TYPE_DEF_FOUND_FOR_ELEMENT_ON_NODE,
-                                           typeRef.toString(),
-                                           model.getName(),
-                                           node.getName() );
-                }
+                MsgUtil.reportMessage( logger,
+                                       DMNMessage.Severity.ERROR,
+                                       localElement,
+                                       dmnModel,
+                                       null,
+                                       null,
+                                       Msg.UNKNOWN_TYPE_REF_ON_NODE,
+                                       typeRef.toString(),
+                                       localElement.getParentDRGElement().getIdentifierString() );
             }
             return type;
         }

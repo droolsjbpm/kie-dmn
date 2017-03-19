@@ -4,31 +4,28 @@ import org.kie.dmn.api.core.DMNMessageType;
 
 public class Msg {
     // consolidated
-    public static final Message2 UNSUPPORTED_ELEMENT                   = new Message2( DMNMessageType.UNSUPPORTED_ELEMENT, "Element %s with type='%s' is not supported." );
-    public static final Message2 REQ_INPUT_NOT_FOUND_FOR_NODE          = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required input '%s' not found on node '%s'" );
-    public static final Message2 REQ_DECISION_NOT_FOUND_FOR_NODE       = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required Decision '%s' not found on node '%s'" );
-    public static final Message2 REQ_BKM_NOT_FOUND_FOR_NODE            = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required Business Knowledge Model '%s' not found on node '%s'" );
-    public static final Message2 UNKNOWN_TYPE_REF_ON_NODE              = new Message2( DMNMessageType.TYPE_REF_NOT_FOUND, "Type reference '%s' not found on node '%s'" );
-    public static final Message2 NO_TYPE_DEF_FOUND_FOR_NODE            = new Message2( DMNMessageType.TYPE_DEF_NOT_FOUND, "No '%s' type definition found on node '%s'" );
-    public static final Message3 NO_TYPE_DEF_FOUND_FOR_ELEMENT_ON_NODE = new Message3( DMNMessageType.TYPE_DEF_NOT_FOUND, "No '%s' type definition found for element '%s' on node '%s'" );
-    public static final Message2 INVALID_NAME_VARIABLENAME             = new Message2( DMNMessageType.INVALID_NAME, "Invalid name '%s': %s" );
-    public static final Message1 INVALID_SYNTAX                        = new Message1( DMNMessageType.INVALID_SYNTAX, "%s: invalid syntax" );
-    public static final Message2 INVALID_SYNTAX2                       = new Message2( DMNMessageType.INVALID_SYNTAX, "%s: %s" );
-    public static final Message1 MISSING_EXPRESSION_FOR_BKM            = new Message1( DMNMessageType.MISSING_EXPRESSION, "Missing expression for Business Knowledge Model node '%s'" );
-    public static final Message1 MISSING_EXPRESSION_FOR_DECISION       = new Message1( DMNMessageType.MISSING_EXPRESSION, "Missing expression for Decision Node '%s'" );
-    public static final Message1 MISSING_EXPRESSION_FOR_NODE           = new Message1( DMNMessageType.MISSING_EXPRESSION, "Missing expression for Node '%s'" );
-    public static final Message2 MISSING_EXPRESSION_FOR_INVOCATION     = new Message2( DMNMessageType.MISSING_EXPRESSION, "Missing expression for parameter %s on node '%s'" );
-    public static final Message1 MISSING_PARAMETER_FOR_INVOCATION      = new Message1( DMNMessageType.MISSING_EXPRESSION, "Missing parameter for invocation node '%s'" );
-    public static final Message2 MISSING_EXPRESSION_FOR_NAME           = new Message2( DMNMessageType.MISSING_EXPRESSION, "No expression defined for name '%s' on node '%s'" );
-    public static final Message1 MISSING_VARIABLE_FOR_BKM              = new Message1( DMNMessageType.MISSING_VARIABLE, "Business Knowledge Model node '%s' is missing the variable declaration" );
-    public static final Message1 MISSING_VARIABLE_FOR_INPUT            = new Message1( DMNMessageType.MISSING_VARIABLE, "Input Data node '%s' is missing the variable declaration" );
-    public static final Message1 MISSING_VARIABLE_FOR_DECISION         = new Message1( DMNMessageType.MISSING_VARIABLE, "Decision node '%s' is missing the variable declaration" );
-    public static final Message2 VARIABLE_NAME_MISMATCH_FOR_BKM        = new Message2( DMNMessageType.MISSING_VARIABLE, "Variable name '%s' does not match the Business Knowledge Model node name '%s'" );
-    public static final Message2 VARIABLE_NAME_MISMATCH_FOR_DECISION   = new Message2( DMNMessageType.MISSING_VARIABLE, "Variable name '%s' does not match the Decision node name '%s'" );
-    public static final Message2 VARIABLE_NAME_MISMATCH_FOR_INPUT      = new Message2( DMNMessageType.MISSING_VARIABLE, "Variable name '%s' does not match the Input Data node name '%s'" );
+    public static final Message2 UNSUPPORTED_ELEMENT                 = new Message2( DMNMessageType.UNSUPPORTED_ELEMENT, "Element %s with type='%s' is not supported." );
+    public static final Message2 REQ_INPUT_NOT_FOUND_FOR_NODE        = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required input '%s' not found on node '%s'" );
+    public static final Message2 REQ_DECISION_NOT_FOUND_FOR_NODE     = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required Decision '%s' not found on node '%s'" );
+    public static final Message2 REQ_BKM_NOT_FOUND_FOR_NODE          = new Message2( DMNMessageType.REQ_NOT_FOUND, "Required Business Knowledge Model '%s' not found on node '%s'" );
+    public static final Message2 UNKNOWN_TYPE_REF_ON_NODE            = new Message2( DMNMessageType.TYPE_DEF_NOT_FOUND, "Unable to resolve type reference '%s' on node '%s'" );
+    public static final Message2 INVALID_NAME                        = new Message2( DMNMessageType.INVALID_NAME, "Invalid name '%s': %s" );
+    public static final Message1 INVALID_SYNTAX                      = new Message1( DMNMessageType.INVALID_SYNTAX, "%s: invalid syntax" );
+    public static final Message2 INVALID_SYNTAX2                     = new Message2( DMNMessageType.INVALID_SYNTAX, "%s: %s" );
+    public static final Message1 MISSING_EXPRESSION_FOR_BKM          = new Message1( DMNMessageType.MISSING_EXPRESSION, "Missing expression for Business Knowledge Model node '%s'" );
+    public static final Message1 MISSING_EXPRESSION_FOR_DECISION     = new Message1( DMNMessageType.MISSING_EXPRESSION, "Missing expression for Decision Node '%s'" );
+    public static final Message1 MISSING_EXPRESSION_FOR_NODE         = new Message1( DMNMessageType.MISSING_EXPRESSION, "Missing expression for Node '%s'" );
+    public static final Message2 MISSING_EXPRESSION_FOR_INVOCATION   = new Message2( DMNMessageType.MISSING_EXPRESSION, "Missing expression for parameter %s on node '%s'" );
+    public static final Message1 MISSING_PARAMETER_FOR_INVOCATION    = new Message1( DMNMessageType.MISSING_EXPRESSION, "Missing parameter for invocation node '%s'" );
+    public static final Message2 MISSING_EXPRESSION_FOR_NAME         = new Message2( DMNMessageType.MISSING_EXPRESSION, "No expression defined for name '%s' on node '%s'" );
+    public static final Message1 MISSING_VARIABLE_FOR_BKM            = new Message1( DMNMessageType.MISSING_VARIABLE, "Business Knowledge Model node '%s' is missing the variable declaration" );
+    public static final Message1 MISSING_VARIABLE_FOR_INPUT          = new Message1( DMNMessageType.MISSING_VARIABLE, "Input Data node '%s' is missing the variable declaration" );
+    public static final Message1 MISSING_VARIABLE_FOR_DECISION       = new Message1( DMNMessageType.MISSING_VARIABLE, "Decision node '%s' is missing the variable declaration" );
+    public static final Message2 VARIABLE_NAME_MISMATCH_FOR_BKM      = new Message2( DMNMessageType.VARIABLE_NAME_MISMATCH, "Variable name '%s' does not match the Business Knowledge Model node name '%s'" );
+    public static final Message2 VARIABLE_NAME_MISMATCH_FOR_DECISION = new Message2( DMNMessageType.VARIABLE_NAME_MISMATCH, "Variable name '%s' does not match the Decision node name '%s'" );
+    public static final Message2 VARIABLE_NAME_MISMATCH_FOR_INPUT    = new Message2( DMNMessageType.VARIABLE_NAME_MISMATCH, "Variable name '%s' does not match the Input Data node name '%s'" );
 
     // not consolidated yet
-
     public static final Message1 DECISION_NOT_FOUND_FOR_NAME                         = new Message1( DMNMessageType.DECISION_NOT_FOUND, "Decision not found for name '%s'" );
     public static final Message1 DECISION_NOT_FOUND_FOR_ID                           = new Message1( DMNMessageType.DECISION_NOT_FOUND, "Decision not found for type '%s'" );
     public static final Message2 MISSING_DEP_FOR_BKM                                 = new Message2( DMNMessageType.MISSING_DEP, "Missing dependency for Business Knowledge Model node '%s': dependency='%s'" );
@@ -75,13 +72,11 @@ public class Msg {
     public static final Message0 INVOCATION_WRONG_PARAM_COUNT        = new Message0( DMNMessageType.INVOCATION_WRONG_PARAM_COUNT, "Invocation referecing a DRGElement but number of parameters is not consistent with target" );
     public static final Message0 ITEMCOMP_DUPLICATED                 = new Message0( DMNMessageType.ITEMCOMP_DUPLICATED, "itemComponent with duplicated name within a same parent itemDefinition" );
     public static final Message0 ITEMDEF_NOT_UNIQUE                  = new Message0( DMNMessageType.ITEMDEF_NOT_UNIQUE, "itemDefinition name is not unique in the model" );
-    public static final Message0 NAME_INVALID                        = new Message0( DMNMessageType.NAME_INVALID, "the NamedElement attribute 'name' is not a valid FEEL name definition" );
     public static final Message0 RELATION_DUP_COLUMN                 = new Message0( DMNMessageType.RELATION_DUP_COLUMN, "Relation contains duplicate column name" );
     public static final Message0 RELATION_ROW_CELL_NOTLITERAL        = new Message0( DMNMessageType.RELATION_ROW_CELL_NOTLITERAL, "Relation contains a row with a cell which is not a literalExpression" );
     public static final Message0 RELATION_ROW_CELLCOUNTMISMATCH      = new Message0( DMNMessageType.RELATION_ROW_CELLCOUNTMISMATCH, "Relation contains a row with wrong number of cells" );
     public static final Message0 REQAUTH_NOT_KNOWLEDGESOURCE         = new Message0( DMNMessageType.REQAUTH_NOT_KNOWLEDGESOURCE, "RequiredAuthority is not pointing to a KnowledgeSource" );
     public static final Message0 TYPEREF_NO_FEEL_TYPE                = new Message0( DMNMessageType.TYPEREF_NO_FEEL_TYPE, "This element indicates a 'typeRef' which is not a valid built-in FEEL type" );
-    public static final Message0 TYPEREF_NOT_FEEL_NOT_DEF            = new Message0( DMNMessageType.TYPEREF_NOT_FEEL_NOT_DEF, "This element indicates a 'typeRef' which is not in FEEL namespace and not defined with itemDefinition" );
 
     public static interface Message {
         String getMask();

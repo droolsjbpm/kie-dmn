@@ -165,32 +165,79 @@ public class ValidatorTest {
     public void testBKM_MISMATCH_VAR() {
         List<DMNMessage> validate = validator.validate( getReader( "BKM_MISMATCH_VAR.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
         assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_VARIABLE ) ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.VARIABLE_NAME_MISMATCH ) ) );
     }
 
     @Test
     public void testDECISION_MISMATCH_VAR() {
         List<DMNMessage> validate = validator.validate( getReader( "DECISION_MISMATCH_VAR.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
         assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_VARIABLE ) ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.VARIABLE_NAME_MISMATCH ) ) );
     }
 
     @Test
     public void testINPUT_MISMATCH_VAR() {
         List<DMNMessage> validate = validator.validate( getReader( "INPUTDATA_MISMATCH_VAR.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
-        System.out.println(formatMessages( validate ));
         assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_VARIABLE ) ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.VARIABLE_NAME_MISMATCH ) ) );
     }
 
     @Test
     public void testTYPEREF_NO_NS() throws URISyntaxException {
-        List<DMNMessage> validateXML = validator.validate( new File(this.getClass().getResource( "TYPEREF_NO_NS.dmn" ).toURI()), DMNValidator.Validation.VALIDATE_SCHEMA);
-        assertTrue( !validateXML.isEmpty() );
-
-        validateXML.forEach(System.err::println);
+        List<DMNMessage> validate = validator.validate( getReader( "TYPEREF_NO_NS.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 2 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.FAILED_XML_VALIDATION ) ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.TYPE_DEF_NOT_FOUND ) ) );
     }
-    
+
+    @Test
+    public void testTYPEREF_NOT_FEEL_NOT_DEF() {
+        List<DMNMessage> validate = validator.validate( getReader( "TYPEREF_NOT_FEEL_NOT_DEF.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 2 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.INVALID_NAME ) ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.TYPE_DEF_NOT_FOUND ) ) );
+    }
+
+    @Test
+    public void testTYPEREF_NOT_FEEL_NOT_DEF_valid() {
+        // DROOLS-1433
+        // the assumption is that the following document TYPEREF_NOT_FEEL_NOT_DEF_valid.dmn should NOT contain any DMNMessageTypeId.TYPEREF_NOT_FEEL_NOT_DEF at all
+        // the test also highlight typically in a DMN model many nodes would not define a typeRef, resulting in a large number of false negative
+        List<DMNMessage> validate = validator.validate( getReader( "TYPEREF_NOT_FEEL_NOT_DEF_valid.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 0 ) );
+    }
+
+    @Test
+    public void testNAME_INVALID() {
+        List<DMNMessage> validate = validator.validate( getReader( "NAME_INVALID.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.INVALID_NAME ) ) );
+    }
+
+    @Test
+    public void testNAME_INVALID_bis() {
+        /* in the file NAME_INVALID_bis.dmn there are 3 invalid "names" but only the one for the Decision node should be reported.
+         * <definitions id="NAME_INVALID" name="code in list of codes" ...
+            <decision name="code in list of codes" id="d_GreetingMessage">
+             <variable name="code in list of codes" typeRef="feel:string"/>
+         */
+        List<DMNMessage> validate = validator.validate( getReader( "NAME_INVALID_bis.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        System.out.println(formatMessages( validate ));
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.INVALID_NAME ) ) );
+    }
+
+    @Test
+    public void testNAME_INVALID_empty_name() {
+        List<DMNMessage> validate = validator.validate( getReader( "DROOLS-1447.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        System.out.println(formatMessages( validate ));
+        assertThat( formatMessages( validate ), validate.size(), is( 4 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.FAILED_XML_VALIDATION ) ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.VARIABLE_NAME_MISMATCH ) ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.INVALID_NAME ) && p.getSourceId().equals( "_5e43b55c-888e-443c-b1b9-80e4aa6746bd" ) ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.INVALID_NAME ) && p.getSourceId().equals( "_b1e4588e-9ce1-4474-8e4e-48dbcdb7524b" ) ) );
+    }
+
     @Test
     public void testCONTEXT_DUP_ENTRY() {
         Definitions definitions = utilDefinitions( "CONTEXT_DUP_ENTRY.dmn", "CONTEXT_DUP_ENTRY" );
@@ -338,29 +385,6 @@ public class ValidatorTest {
     }
     
     @Test
-    public void testNAME_INVALID() {
-        Definitions definitions = utilDefinitions( "NAME_INVALID.dmn", "NAME_INVALID" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.NAME_INVALID ) ) );
-    }
-    
-    @Test
-    public void testNAME_INVALID_bis() {
-        Definitions definitions = utilDefinitions( "NAME_INVALID_bis.dmn", "code in list of codes" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.NAME_INVALID ) ) );
-        
-        /* in the file NAME_INVALID_bis.dmn there are 3 invalid "names" but only the one for the Decision node should be reported.
-         * <definitions id="NAME_INVALID" name="code in list of codes" ...
-            <decision name="code in list of codes" id="d_GreetingMessage">
-             <variable name="code in list of codes" typeRef="feel:string"/>
-         */
-        assertEquals("functional optimization of valid names to report ", 1, validate.stream().filter( p -> p.getMessageType().equals( DMNMessageType.NAME_INVALID ) ).count() );
-    }
-    
-    @Test
     public void testRELATION_DUP_COLUMN() {
         Definitions definitions = utilDefinitions( "RELATION_DUP_COLUMN.dmn", "RELATION_DUP_COLUMN" );
         List<DMNMessage> validate = validator.validate(definitions);
@@ -410,40 +434,6 @@ public class ValidatorTest {
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.TYPEREF_NO_FEEL_TYPE ) ) );
     }
     
-    @Test
-    public void testTYPEREF_NOT_FEEL_NOT_DEF() {
-        Definitions definitions = utilDefinitions( "TYPEREF_NOT_FEEL_NOT_DEF.dmn", "TYPEREF_NOT_FEEL_NOT_DEF" );
-        List<DMNMessage> validate = validator.validate(definitions);
-
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.TYPEREF_NOT_FEEL_NOT_DEF ) ) );
-    }
-    
-    @Test
-    public void testTYPEREF_NOT_FEEL_NOT_DEF_valid() {
-        // DROOLS-1433
-        // the assumption is that the following document TYPEREF_NOT_FEEL_NOT_DEF_valid.dmn should NOT contain any DMNMessageTypeId.TYPEREF_NOT_FEEL_NOT_DEF at all
-        // the test also highlight typically in a DMN model many nodes would not define a typeRef, resulting in a large number of false negative
-        Definitions definitions = utilDefinitions( "TYPEREF_NOT_FEEL_NOT_DEF_valid.dmn", "TYPEREF_NOT_FEEL_NOT_DEF_valid" );
-        List<DMNMessage> validate = validator.validate(definitions);
-
-        validate.forEach(m -> System.out.println( m.getMessage()) );
-        
-        assertTrue( validate.stream().noneMatch( p -> p.getMessageType().equals( DMNMessageType.TYPEREF_NOT_FEEL_NOT_DEF ) ) );
-    }
-    
-    @Test
-    public void testNAME_INVALID_empty_name() {
-        assertFalse( FEELParser.isVariableNameValid(null) );
-        
-        // DROOLS-1447
-        assertFalse( FEELParser.isVariableNameValid("")   );
-        
-        Definitions definitions = utilDefinitions( "DROOLS-1447.dmn", "DROOLS-1447" );
-        List<DMNMessage> validate = validator.validate(definitions);
-
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.NAME_INVALID ) ) );
-    }
-
     private String formatMessages(List<DMNMessage> messages) {
         return messages.stream().map( m -> m.toString() ).collect( Collectors.joining( "\n" ) );
     }
