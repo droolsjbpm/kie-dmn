@@ -24,9 +24,12 @@ import org.kie.dmn.api.core.DMNCompiler;
 import org.kie.dmn.api.core.DMNMessage;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.backend.marshalling.v1_1.DMNMarshallerFactory;
+import org.kie.dmn.core.api.DMNMessageManager;
 import org.kie.dmn.core.compiler.DMNCompilerImpl;
 import org.kie.dmn.core.impl.DMNMessageImpl;
 import org.kie.dmn.core.util.KieHelper;
+import org.kie.dmn.core.util.DefaultDMNMessagesManager;
+import org.kie.dmn.core.util.Msg;
 import org.kie.dmn.core.util.MsgUtil;
 import org.kie.dmn.model.v1_1.DMNModelInstrumentedBase;
 import org.kie.dmn.model.v1_1.Definitions;
@@ -96,13 +99,13 @@ public class DMNValidatorImpl implements DMNValidator {
 
     @Override
     public List<DMNMessage> validate(Definitions dmnModel, Validation... options) {
-        List<DMNMessage> results = new ArrayList<>(  );
+        DMNMessageManager results = new DefaultDMNMessagesManager();
         EnumSet<Validation> flags = EnumSet.copyOf( Arrays.asList( options ) );
         if( flags.contains( VALIDATE_SCHEMA ) ) {
             throw new IllegalArgumentException( "Schema validation not supported for in memory object. Please use the validate method with the file or reader signature." );
         }
         validateModelCompilation( dmnModel, results, flags );
-        return results;
+        return results.getMessages();
     }
 
     @Override
@@ -112,7 +115,7 @@ public class DMNValidatorImpl implements DMNValidator {
 
     @Override
     public List<DMNMessage> validate(File xmlFile, Validation... options) {
-        List<DMNMessage> results = new ArrayList<>(  );
+        DMNMessageManager results = new DefaultDMNMessagesManager(  );
         EnumSet<Validation> flags = EnumSet.copyOf( Arrays.asList( options ) );
         if( flags.contains( VALIDATE_SCHEMA ) ) {
             results.addAll( validateSchema( xmlFile ) );
@@ -127,8 +130,7 @@ public class DMNValidatorImpl implements DMNValidator {
                 throw new IllegalArgumentException( "Error reading file "+xmlFile.getAbsolutePath(), e );
             }
         }
-        logDebugMessages( results );
-        return results;
+        return results.getMessages();
     }
 
     @Override
@@ -138,20 +140,37 @@ public class DMNValidatorImpl implements DMNValidator {
 
     @Override
     public List<DMNMessage> validate(Reader reader, Validation... options) {
-        List<DMNMessage> results = new ArrayList<>(  );
+        DMNMessageManager results = new DefaultDMNMessagesManager(  );
         EnumSet<Validation> flags = EnumSet.copyOf( Arrays.asList( options ) );
-        if( flags.contains( VALIDATE_SCHEMA ) ) {
-            results.addAll( validateSchema( reader ) );
+        try {
+            String content = readContent( reader );
+            if( flags.contains( VALIDATE_SCHEMA ) ) {
+                results.addAll( validateSchema( new StringReader( content ) ) );
+            }
+            if( flags.contains( VALIDATE_MODEL ) || flags.contains( VALIDATE_COMPILATION ) ) {
+                Definitions dmndefs = DMNMarshallerFactory.newDefaultMarshaller().unmarshal( new StringReader( content ) );
+                validateModelCompilation( dmndefs, results, flags );
+            }
+        } catch ( Throwable t ) {
+            LOG.error( "Error reading content from the reader. Unable to validate it.", t );
+            throw new IllegalArgumentException( "Error reading content from the reader. Unable to validate it. ", t );
         }
-        if( flags.contains( VALIDATE_MODEL ) || flags.contains( VALIDATE_COMPILATION ) ) {
-            Definitions dmndefs = DMNMarshallerFactory.newDefaultMarshaller().unmarshal( reader );
-            validateModelCompilation( dmndefs, results, flags );
-        }
-        logDebugMessages( results );
-        return results;
+        return results.getMessages();
     }
 
-    private void validateModelCompilation(Definitions dmnModel, List<DMNMessage> results, EnumSet<Validation> flags) {
+    private String readContent(Reader reader)
+            throws IOException {
+        char[] b = new char[32 * 1024];
+        StringBuilder content = new StringBuilder(  );
+        int chars = -1;
+        while( (chars = reader.read( b ) ) > 0 ) {
+            content.append( b, 0, chars );
+        }
+        return content.toString();
+    }
+
+
+    private void validateModelCompilation(Definitions dmnModel, DMNMessageManager results, EnumSet<Validation> flags) {
         if( flags.contains( VALIDATE_MODEL ) ) {
             results.addAll( validateModel( dmnModel ) );
         }
@@ -175,7 +194,7 @@ public class DMNValidatorImpl implements DMNValidator {
         try {
             schema.newValidator().validate(s);
         } catch (SAXException | IOException e) {
-            problems.add(new DMNMessageImpl( DMNMessage.Severity.ERROR, MsgUtil.createMessage( Msg.FAILED_XML_VALIDATION), Msg.FAILED_XML_VALIDATION.getType(), null, e));
+            problems.add(new DMNMessageImpl( DMNMessage.Severity.ERROR, MsgUtil.createMessage( Msg.FAILED_XML_VALIDATION, e.getMessage() ), Msg.FAILED_XML_VALIDATION.getType(), null, e));
             logDebugMessages( problems );
         }
         // TODO detect if the XSD is not provided through schemaLocation, and validate against embedded
@@ -193,7 +212,7 @@ public class DMNValidatorImpl implements DMNValidator {
         
         kieSession.execute(allChildren(dmnModel).collect(toList()));
 
-        return reporter.getMessages();
+        return reporter.getMessages().getMessages();
     }
 
     private List<DMNMessage> validateCompilation(Definitions dmnModel) {

@@ -33,7 +33,6 @@ import org.kie.dmn.core.api.DMNFactory;
 import org.kie.dmn.core.api.EvaluatorResult;
 import org.kie.dmn.api.core.event.DMNRuntimeEventListener;
 import org.kie.dmn.core.ast.BusinessKnowledgeModelNodeImpl;
-import org.kie.dmn.core.ast.DMNBaseNode;
 import org.kie.dmn.core.ast.DecisionNodeImpl;
 import org.kie.dmn.core.util.Msg;
 import org.kie.dmn.core.util.MsgUtil;
@@ -172,7 +171,7 @@ public class DMNRuntimeImpl
                                    result,
                                    null,
                                    null,
-                                   Msg.MISSING_EXPRESSION_FOR_BKM_NODE_SKIP_EVAL,
+                                   Msg.MISSING_EXPRESSION_FOR_BKM,
                                    getIdentifier( bkm ) );
             return;
         }
@@ -276,7 +275,7 @@ public class DMNRuntimeImpl
                                                             result,
                                                             null,
                                                             null,
-                                                            Msg.MISSING_EXPRESSION_FOR_DECISION_NODE_SKIP_EVAL,
+                                                            Msg.MISSING_EXPRESSION_FOR_DECISION,
                                                             getIdentifier( decision ) );
 
                 reportFailure( dr, message, DMNDecisionResult.DecisionEvaluationStatus.SKIPPED );

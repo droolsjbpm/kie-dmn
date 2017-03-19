@@ -23,6 +23,7 @@ import org.kie.dmn.feel.lang.types.BuiltInType;
 import org.kie.dmn.feel.parser.feel11.FEELParser;
 import org.kie.dmn.feel.runtime.events.SyntaxErrorEvent;
 import org.kie.dmn.api.feel.runtime.events.FEELEvent;
+import org.kie.dmn.core.util.Msg;
 
 global org.kie.dmn.validation.MessageReporter reporter;
 
@@ -30,15 +31,51 @@ rule BKM_MISSING_EXPR
 when
     $d : BusinessKnowledgeModel( encapsulatedLogic == null || encapsulatedLogic.expression == null )
 then
-    reporter.report( DMNMessage.Severity.ERROR, $d, Msg.BKM_MISSING_EXPR );
+    reporter.report( DMNMessage.Severity.ERROR, $d, Msg.MISSING_EXPRESSION_FOR_BKM, $d.getIdentifierString() );
+end
+
+rule DECISION_MISSING_EXPR
+when
+    $d : Decision( expression == null )
+then
+    reporter.report( DMNMessage.Severity.ERROR,  $d , Msg.MISSING_EXPRESSION_FOR_DECISION, $d.getIdentifierString() );
+end
+
+rule INVOCATION_MISSING_EXPR
+when
+    $b : Binding( expression == null )
+then
+    reporter.report( DMNMessage.Severity.ERROR, $b, Msg.MISSING_EXPRESSION_FOR_INVOCATION,
+                     $b.getParameter() != null ? $b.getParameter().getIdentifierString() : "[unnamed]",
+                     $b.getParentDRGElement().getIdentifierString() );
 end
 
 rule BKM_MISSING_VAR
 when
-    $d : BusinessKnowledgeModel()
-    not( BusinessKnowledgeModel( /variable{name == $d.name}, this == $d ) )
+    $d : BusinessKnowledgeModel( variable == null )
 then
-    reporter.report( DMNMessage.Severity.ERROR,  $d , Msg.BKM_MISSING_VAR );
+    reporter.report( DMNMessage.Severity.ERROR,  $d , Msg.MISSING_VARIABLE_FOR_BKM, $d.getIdentifierString() );
+end
+
+rule DECISION_MISSING_VAR
+when
+    $d : Decision( variable == null )
+then
+    reporter.report( DMNMessage.Severity.ERROR,  $d , Msg.MISSING_VARIABLE_FOR_DECISION, $d.getIdentifierString() );
+end
+
+rule INPUT_MISSING_VAR
+when
+    $d : InputData( variable == null )
+then
+    reporter.report( DMNMessage.Severity.ERROR,  $d , Msg.MISSING_VARIABLE_FOR_INPUT, $d.getIdentifierString() );
+end
+
+rule BKM_VAR_MISMATCH
+when
+    $d : BusinessKnowledgeModel( variable != null, name != variable.name )
+then
+    reporter.report( DMNMessage.Severity.ERROR,  $d , Msg.VARIABLE_NAME_MISMATCH_FOR_BKM, $d.getVariable().getName(), $d.getName() );
 end
 
 rule CONTEXT_DUP_ENTRY
@@ -62,21 +99,6 @@ when
   $y : DRGElement( name == $x.name, this != $x )
 then
   reporter.report( DMNMessage.Severity.ERROR,  $x , Msg.DRGELEM_NOT_UNIQUE );
-end
-
-rule DECISION_MISSING_EXPR
-when
-    $d : Decision( expression == null )
-then
-    reporter.report( DMNMessage.Severity.ERROR,  $d , Msg.DECISION_MISSING_EXPR );
-end
-
-rule DECISION_MISSING_VAR
-when
-    $d : Decision()
-    not( Decision( /variable{name == $d.name}, this == $d ) )
-then
-    reporter.report( DMNMessage.Severity.ERROR,  $d , Msg.DECISION_MISSING_VAR );
 end
 
 rule DTABLE_MULTIPLEOUT_NAME
@@ -146,14 +168,6 @@ when
     $fp2 : InformationItem( name == $fp1.name, parent == $fp1.parent, this != $fp1 )
 then
     reporter.report( DMNMessage.Severity.ERROR,  $fp1 , Msg.FORMAL_PARAM_DUPLICATED );
-end
-
-rule INPUTDATA_MISSING_VAR
-when
-    $id : InputData()
-    not( InputData( /variable{name == $id.name}, this == $id ) )
-then
-    reporter.report( DMNMessage.Severity.ERROR,  $id , Msg.INPUTDATA_MISSING_VAR );
 end
 
 // The parameter names in the Binding elements SHALL be a subset of the formalParameters of the calledFunction.

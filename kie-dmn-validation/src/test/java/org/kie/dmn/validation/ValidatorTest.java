@@ -16,12 +16,17 @@
 
 package org.kie.dmn.validation;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.*;
+import static org.kie.dmn.validation.DMNValidator.Validation.VALIDATE_COMPILATION;
+import static org.kie.dmn.validation.DMNValidator.Validation.VALIDATE_MODEL;
+import static org.kie.dmn.validation.DMNValidator.Validation.VALIDATE_SCHEMA;
 
 import java.io.*;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.stream.Location;
 
@@ -67,14 +72,14 @@ public class ValidatorTest {
     }
     
     private Definitions utilDefinitions(String filename, String modelName) {
-        List<DMNMessage> validateXML;
-        try {
-            validateXML = validator.validate( new File(this.getClass().getResource(filename).toURI()), DMNValidator.Validation.VALIDATE_SCHEMA );
-            assertThat( "using unit test method utilDefinitions must received a XML valid DMN file", validateXML, IsEmptyCollection.empty() );
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            fail("Unable for the test suite to locate the file for XML validation.");
-        }
+//        List<DMNMessage> validateXML;
+//        try {
+//            validateXML = validator.validate( new File(this.getClass().getResource(filename).toURI()), DMNValidator.Validation.VALIDATE_SCHEMA );
+//            assertThat( "using unit test method utilDefinitions must received a XML valid DMN file", validateXML, IsEmptyCollection.empty() );
+//        } catch (URISyntaxException e) {
+//            e.printStackTrace();
+//            fail("Unable for the test suite to locate the file for XML validation.");
+//        }
         
         DMNMarshaller marshaller = DMNMarshallerFactory.newDefaultMarshaller();
         try( InputStreamReader isr = new InputStreamReader( getClass().getResourceAsStream( filename ) ) ) {
@@ -87,37 +92,82 @@ public class ValidatorTest {
         }
         return null;
     }
+
+    private Reader getReader( String filename ) {
+        return new InputStreamReader( getClass().getResourceAsStream( filename ) );
+    }
         
     @Test
     public void testInvalidXml() throws URISyntaxException {
         List<DMNMessage> validateXML = validator.validate( new File(this.getClass().getResource( "invalidXml.dmn" ).toURI()), DMNValidator.Validation.VALIDATE_SCHEMA);
-        assertTrue( !validateXML.isEmpty() );
-        
-        validateXML.forEach(System.err::println);
+        assertThat( formatMessages( validateXML ), validateXML.size(), is( 1 ) );
+        assertThat( validateXML.get( 0 ).toString(), validateXML.get( 0 ).getMessageType(), is( DMNMessageType.FAILED_XML_VALIDATION ) );
     }
-    
+
+    @Test
+    public void testBKM_MISSING_EXPR() {
+        List<DMNMessage> validate = validator.validate( getReader( "BKM_MISSING_EXPR.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertThat( validate.get( 0 ).toString(), validate.get( 0 ).getMessageType(), is( DMNMessageType.MISSING_EXPRESSION ) );
+    }
+
+    @Test
+    public void testDECISION_MISSING_EXPR() {
+        List<DMNMessage> validate = validator.validate( getReader( "DECISION_MISSING_EXPR.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertThat( validate.get( 0 ).toString(), validate.get( 0 ).getMessageType(), is( DMNMessageType.MISSING_EXPRESSION ) );
+    }
+
+    @Test
+    public void testINVOCATION_MISSING_EXPR() {
+        List<DMNMessage> validate = validator.validate( getReader( "INVOCATION_MISSING_EXPR.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertThat( validate.get( 0 ).toString(), validate.get( 0 ).getMessageType(), is( DMNMessageType.MISSING_EXPRESSION ) );
+    }
+
+    @Test
+    public void testCONTEXT_MISSING_EXPR() {
+        List<DMNMessage> validate = validator.validate( getReader( "CONTEXT_MISSING_EXPR.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 2 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.FAILED_XML_VALIDATION ) ) ); // this is schema validation
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_EXPRESSION ) ) );
+    }
+
+    @Test
+    public void testBKM_MISSING_VAR() {
+        List<DMNMessage> validate = validator.validate( getReader( "BKM_MISSING_VAR.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_VARIABLE ) ) );
+    }
+
+    @Test
+    public void testDECISION_MISSING_VAR() {
+        List<DMNMessage> validate = validator.validate( getReader( "DECISION_MISSING_VAR.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_VARIABLE ) ) );
+    }
+
+    @Test
+    public void testDECISION_MISSING_VARbis() {
+        List<DMNMessage> validate = validator.validate( getReader( "DECISION_MISSING_VARbis.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        System.out.println(formatMessages( validate ));
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_VARIABLE ) ) );
+    }
+
+    @Test
+    public void testINPUT_MISSING_VAR() {
+        List<DMNMessage> validate = validator.validate( getReader( "INPUTDATA_MISSING_VAR.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_VARIABLE ) ) );
+    }
+
     @Test
     public void testTYPEREF_NO_NS() throws URISyntaxException {
         List<DMNMessage> validateXML = validator.validate( new File(this.getClass().getResource( "TYPEREF_NO_NS.dmn" ).toURI()), DMNValidator.Validation.VALIDATE_SCHEMA);
         assertTrue( !validateXML.isEmpty() );
-        
+
         validateXML.forEach(System.err::println);
-    }
-    
-    @Test
-    public void testBKM_MISSING_EXPR() {
-        Definitions definitions = utilDefinitions( "BKM_MISSING_EXPR.dmn", "BKM_MISSING_EXPR" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.BKM_MISSING_EXPR ) ) );
-    }
-    
-    @Test
-    public void testBKM_MISSING_VAR() {
-        Definitions definitions = utilDefinitions( "BKM_MISSING_VAR.dmn", "BKM_MISSING_VAR" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.BKM_MISSING_VAR ) ) );
     }
     
     @Test
@@ -134,37 +184,6 @@ public class ValidatorTest {
         List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.CONTEXT_ENTRY_NOTYPEREF ) ) );
-    }
-    
-    @Test
-    public void testDECISION_MISSING_EXPR() {
-        Definitions definitions = utilDefinitions( "DECISION_MISSING_EXPR.dmn", "DECISION_MISSING_EXPR" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DECISION_MISSING_EXPR ) ) );
-    }
-
-    @Test
-    public void testDECISION_MISSING_VAR() {
-        Definitions definitions = utilDefinitions( "DECISION_MISSING_VAR.dmn", "DECISION_MISSING_VAR" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertEquals(1, validate.stream().filter( p -> p.getMessageType().equals( DMNMessageType.DECISION_MISSING_VAR )).count() );
-        
-        DMNMessage msg0 = validate.stream().filter( p -> p.getMessageType().equals( DMNMessageType.DECISION_MISSING_VAR )).findFirst().get();
-        assertEquals( DMNMessageType.DECISION_MISSING_VAR, msg0.getMessageType());
-        
-        DMNModelInstrumentedBase base = (DMNModelInstrumentedBase) msg0.getSourceReference();
-        Location loc0 = base.getLocation();
-        assertEquals("In the DECISION_MISSING_VAR.dmn file, the element Decision faulty here is on line 24. ", 24, loc0.getLineNumber());
-    }
-    
-    @Test
-    public void testDECISION_MISSING_VARbis() {
-        Definitions definitions = utilDefinitions( "DECISION_MISSING_VARbis.dmn", "DECISION_MISSING_VARbis" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DECISION_MISSING_VAR ) ) );
     }
     
     @Test
@@ -237,14 +256,6 @@ public class ValidatorTest {
         List<DMNMessage> validate = validator.validate(definitions);
         
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.FORMAL_PARAM_DUPLICATED ) ) );
-    }
-    
-    @Test
-    public void testINPUTDATA_MISSING_VAR() {
-        Definitions definitions = utilDefinitions( "INPUTDATA_MISSING_VAR.dmn", "INPUTDATA_MISSING_VAR" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.INPUTDATA_MISSING_VAR ) ) );
     }
     
     @Test
@@ -411,4 +422,9 @@ public class ValidatorTest {
 
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.NAME_INVALID ) ) );
     }
+
+    private String formatMessages(List<DMNMessage> messages) {
+        return messages.stream().map( m -> m.toString() ).collect( Collectors.joining( "\n" ) );
+    }
+
 }
