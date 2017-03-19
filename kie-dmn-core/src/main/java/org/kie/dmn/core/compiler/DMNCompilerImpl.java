@@ -233,7 +233,7 @@ public class DMNCompilerImpl
                 } else {
                     MsgUtil.reportMessage( logger,
                                            DMNMessage.Severity.ERROR,
-                                           node.getSource(),
+                                           ir.getRequiredInput(),
                                            model,
                                            null,
                                            null,
@@ -249,7 +249,7 @@ public class DMNCompilerImpl
                 } else {
                     MsgUtil.reportMessage( logger,
                                            DMNMessage.Severity.ERROR,
-                                           node.getSource(),
+                                           ir.getRequiredDecision(),
                                            model,
                                            null,
                                            null,
@@ -268,7 +268,7 @@ public class DMNCompilerImpl
                 } else {
                     MsgUtil.reportMessage( logger,
                                            DMNMessage.Severity.ERROR,
-                                           node.getSource(),
+                                           kr.getRequiredKnowledge(),
                                            model,
                                            null,
                                            null,

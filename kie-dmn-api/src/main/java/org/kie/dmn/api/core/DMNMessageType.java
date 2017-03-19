@@ -11,7 +11,12 @@ public enum DMNMessageType {
     MISSING_VARIABLE( "A variable declaration is missing", Tag.COMPILATION, Tag.VALIDATION, Tag.DMN_CORE, Tag.DMN_VALIDATOR ),
     VARIABLE_NAME_MISMATCH( "A variable name does not match the node it belongs to", Tag.COMPILATION, Tag.VALIDATION, Tag.DMN_CORE, Tag.DMN_VALIDATOR ),
     MISSING_TYPE_REF("Type ref not defined", Tag.COMPILATION, Tag.VALIDATION, Tag.DMN_CORE, Tag.DMN_VALIDATOR ),
-    DUPLICATE_NAME("The referenced name is not unique with its scope", Tag.DMN_VALIDATOR ),
+    DUPLICATE_NAME("The referenced name is not unique with its scope", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
+    MISSING_NAME("The referenced element requires a name", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
+    MISSING_OUTPUT_VALUES("The referenced output elements are missing the list of output values", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
+    ILLEGAL_USE_OF_NAME("The referenced element should not have a name set", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
+    ILLEGAL_USE_OF_TYPEREF("The referenced element should not have a typeref set", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
+    INVALID_HREF_SYNTAX( "The 'href' attribute requires the use of anchor syntax", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
 
     FAILED_VALIDATOR ( "The DMN validator failed to load the validation rules. Impossible to proceed with validation.", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
     FAILED_XML_VALIDATION ( "DMN model failed XML schema validation", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
@@ -29,13 +34,6 @@ public enum DMNMessageType {
 
 
 
-    DTABLE_MULTIPLEOUT_NAME ( "", Tag.DMN_VALIDATOR ),
-    DTABLE_MULTIPLEOUT_TYPEREF ( "", Tag.DMN_VALIDATOR ),
-    DTABLE_PRIORITY_MISSING_OUTVALS ( "", Tag.DMN_VALIDATOR ),
-    DTABLE_SINGLEOUT_NONAME ( "", Tag.DMN_VALIDATOR ),
-    DTABLE_SINGLEOUT_NOTYPEREF ( "", Tag.DMN_VALIDATOR ),
-    ELEMREF_MISSING_TARGET ( "", Tag.DMN_VALIDATOR ),
-    ELEMREF_NOHASH ( "", Tag.DMN_VALIDATOR ),
     FORMAL_PARAM_DUPLICATED ( "", Tag.DMN_VALIDATOR ),
     INVOCATION_INCONSISTENT_PARAM_NAMES( "", Tag.DMN_VALIDATOR ),
     INVOCATION_MISSING_TARGET( "", Tag.DMN_VALIDATOR ),

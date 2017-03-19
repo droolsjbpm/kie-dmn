@@ -29,6 +29,13 @@ public class Msg {
     public static final Message2 MISSING_TYPEREF_FOR_PARAMETER       = new Message2( DMNMessageType.MISSING_TYPE_REF, "Parameter named '%s' is missing typeRef on node '%s'" );
     public static final Message2 MISSING_TYPEREF_FOR_COLUMN          = new Message2( DMNMessageType.MISSING_TYPE_REF, "Column named '%s' is missing typeRef on node '%s'" );
     public static final Message1 DUPLICATE_DRG_ELEMENT               = new Message1( DMNMessageType.DUPLICATE_NAME,"Duplicate node name '%s' in the model" );
+    public static final Message1 MISSING_NAME_FOR_DT_OUTPUT          = new Message1( DMNMessageType.MISSING_NAME, "Decision table with multiple outputs on node '%s' requires a name for each output" );
+    public static final Message1 MISSING_TYPEREF_FOR_DT_OUTPUT       = new Message1( DMNMessageType.MISSING_TYPE_REF, "Decision table with multiple outputs on node '%s' requires a typeref for each output" );
+    public static final Message1 MISSING_OUTPUT_VALUES               = new Message1( DMNMessageType.MISSING_OUTPUT_VALUES, "Decision table with hit policy Priority on node '%s' requires output elements to specify the output values list" );
+    public static final Message1 DTABLE_SINGLEOUT_NONAME             = new Message1( DMNMessageType.ILLEGAL_USE_OF_NAME, "Decision table with single output on node '%s' should not have output name" );
+    public static final Message1 DTABLE_SINGLEOUT_NOTYPEREF          = new Message1( DMNMessageType.ILLEGAL_USE_OF_TYPEREF, "Decision table with single output on node '%s' should not have output typeRef" );
+    public static final Message1 ELEMREF_NOHASH                      = new Message1( DMNMessageType.INVALID_HREF_SYNTAX,"The 'href' reference on node '%s' requires the use of the anchor syntax" );
+
 
     // not consolidated yet
     public static final Message1 DECISION_NOT_FOUND_FOR_NAME                         = new Message1( DMNMessageType.DECISION_NOT_FOUND, "Decision not found for name '%s'" );
@@ -55,15 +62,6 @@ public class Msg {
     public static final Message2 ERR_EVAL_LIST_ELEMENT_ON_POSITION_ON_LIST           = new Message2( DMNMessageType.ERR_EVAL, "Error evaluating list element on position '%s' on list '%s'" );
     public static final Message3 ERR_EVAL_ROW_ELEMENT_ON_POSITION_ON_ROW_OF_RELATION = new Message3( DMNMessageType.ERR_EVAL, "Error evaluating row element on position '%s' on row '%s' of relation '%s'" );
 
-    public static final Message0 DTABLE_MULTIPLEOUT_NAME             = new Message0( DMNMessageType.DTABLE_MULTIPLEOUT_NAME, "Decision table with multiple output should have output name" );
-    public static final Message0 DTABLE_MULTIPLEOUT_TYPEREF          = new Message0( DMNMessageType.DTABLE_MULTIPLEOUT_TYPEREF, "Decision table with multiple output should have output typeRef" );
-    public static final Message0 DTABLE_PRIORITY_MISSING_OUTVALS     = new Message0( DMNMessageType.DTABLE_PRIORITY_MISSING_OUTVALS, "Decision table with Priority as hit policy requires output to specify output values" );
-    public static final Message0 DTABLE_SINGLEOUT_NONAME             = new Message0( DMNMessageType.DTABLE_SINGLEOUT_NONAME, "Decision table with single output should not have output name" );
-    public static final Message0 DTABLE_SINGLEOUT_NOTYPEREF          = new Message0( DMNMessageType.DTABLE_SINGLEOUT_NOTYPEREF, "Decision table with single output should not have output typeRef" );
-    public static final Message0 ELEMREF_MISSING_TARGET              = new Message0( DMNMessageType.ELEMREF_MISSING_TARGET, "Element reference is pointing to a unknown target" );
-    public static final Message0 ELEMREF_NOHASH                      = new Message0(
-            DMNMessageType.ELEMREF_NOHASH,
-            "This element 'href' reference is expected to be using an anchor  = new Message0(DMNMessageTypeId.FEEL_PROBLEM, hash sign) for pointing to a target element reference" );
     public static final Message0 FAILED_VALIDATOR                    = new Message0( DMNMessageType.FAILED_VALIDATOR, "The Validator Was unable to compile embedded DMN validation rules, validation of the DMN Model cannot be performed." );
     public static final Message1 FAILED_XML_VALIDATION               = new Message1( DMNMessageType.FAILED_XML_VALIDATION, "Failed XML validation of DMN file: %s" );
     public static final Message0 FORMAL_PARAM_DUPLICATED             = new Message0( DMNMessageType.FORMAL_PARAM_DUPLICATED, "formal parameter with duplicated name" );

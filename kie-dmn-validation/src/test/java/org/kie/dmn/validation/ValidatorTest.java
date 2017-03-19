@@ -253,65 +253,50 @@ public class ValidatorTest {
     @Test
     public void testDRGELEM_NOT_UNIQUE() {
         List<DMNMessage> validate = validator.validate( getReader( "DRGELEM_NOT_UNIQUE.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
-        System.out.println(formatMessages( validate ));
         assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DUPLICATE_NAME ) ) );
     }
     
     @Test
     public void testDTABLE_MULTIPLEOUT_NAME() {
-        Definitions definitions = utilDefinitions( "DTABLE_MULTIPLEOUTPUT_WRONG_OUTPUT.dmn", "DTABLE_MULTIPLEOUTPUT_WRONG_OUTPUT" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DTABLE_MULTIPLEOUT_NAME ) ) );
-    }
-    
-    @Test
-    public void testDTABLE_MULTIPLEOUT_TYPEREF() {
-        Definitions definitions = utilDefinitions( "DTABLE_MULTIPLEOUTPUT_WRONG_OUTPUT.dmn", "DTABLE_MULTIPLEOUTPUT_WRONG_OUTPUT" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DTABLE_MULTIPLEOUT_TYPEREF ) ) );
+        List<DMNMessage> validate = validator.validate( getReader( "DTABLE_MULTIPLEOUTPUT_WRONG_OUTPUT.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 5 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_NAME ) ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_TYPE_REF ) ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.INVALID_NAME ) ) );
     }
     
     @Test
     public void testDTABLE_PRIORITY_MISSING_OUTVALS() {
-        Definitions definitions = utilDefinitions( "DTABLE_PRIORITY_MISSING_OUTVALS.dmn", "DTABLE_PRIORITY_MISSING_OUTVALS" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DTABLE_PRIORITY_MISSING_OUTVALS ) ) );
+        List<DMNMessage> validate = validator.validate( getReader( "DTABLE_PRIORITY_MISSING_OUTVALS.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_OUTPUT_VALUES ) ) );
     }
     
     @Test
     public void testDTABLE_SINGLEOUT_NONAME() {
-        Definitions definitions = utilDefinitions( "DTABLE_SINGLEOUTPUT_WRONG_OUTPUT.dmn", "DTABLE_SINGLEOUTPUT_WRONG_OUTPUT" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DTABLE_SINGLEOUT_NONAME ) ) );
-    }
-    
-    @Test
-    public void testDTABLE_SINGLEOUT_NOTYPEREF() {
-        Definitions definitions = utilDefinitions( "DTABLE_SINGLEOUTPUT_WRONG_OUTPUT.dmn", "DTABLE_SINGLEOUTPUT_WRONG_OUTPUT" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DTABLE_SINGLEOUT_NOTYPEREF ) ) );
+        List<DMNMessage> validate = validator.validate( getReader( "DTABLE_SINGLEOUTPUT_WRONG_OUTPUT.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 2 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.ILLEGAL_USE_OF_NAME ) ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.ILLEGAL_USE_OF_TYPEREF ) ) );
     }
     
     @Test
     public void testELEMREF_MISSING_TARGET() {
-        Definitions definitions = utilDefinitions( "ELEMREF_MISSING_TARGET.dmn", "ELEMREF_MISSING_TARGET" );
-        List<DMNMessage> validate = validator.validate(definitions);
-
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.ELEMREF_MISSING_TARGET ) ) );
+        List<DMNMessage> validate = validator.validate( getReader( "ELEMREF_MISSING_TARGET.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 2 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_EXPRESSION ) ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.REQ_NOT_FOUND ) ) );
     }
     
     @Test
     public void testELEMREF_NOHASH() {
-        Definitions definitions = utilDefinitions( "ELEMREF_NOHASH.dmn", "ELEMREF_NOHASH" );
-        List<DMNMessage> validate = validator.validate(definitions);
-
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.ELEMREF_NOHASH ) ) );
+        List<DMNMessage> validate = validator.validate( getReader( "ELEMREF_NOHASH.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        System.out.println( formatMessages( validate ) );
+        assertThat( formatMessages( validate ), validate.size(), is( 3 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_EXPRESSION ) ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.INVALID_HREF_SYNTAX ) ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.REQ_NOT_FOUND ) ) );
     }
     
     @Test

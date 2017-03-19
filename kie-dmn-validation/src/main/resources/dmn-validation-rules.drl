@@ -149,61 +149,83 @@ rule DTABLE_MULTIPLEOUT_NAME
 when
   $oc : OutputClause( parent instanceof DecisionTable, parent.output.size > 1, this.name == null )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.DTABLE_MULTIPLEOUT_NAME );
+  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.MISSING_NAME_FOR_DT_OUTPUT, $oc.getParentDRGElement().getName() );
 end
 
 rule DTABLE_MULTIPLEOUT_TYPEREF
 when
   $oc : OutputClause( parent instanceof DecisionTable, parent.output.size > 1, this.typeRef == null )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.DTABLE_MULTIPLEOUT_TYPEREF );
+  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.MISSING_TYPEREF_FOR_DT_OUTPUT, $oc.getParentDRGElement().getName() );
 end
 
 rule DTABLE_PRIORITY_MISSING_OUTVALS
 when
   $oc : OutputClause( parent instanceof DecisionTable, parent#DecisionTable.hitPolicy == HitPolicy.PRIORITY, outputValues == null )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.DTABLE_PRIORITY_MISSING_OUTVALS );
+  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.MISSING_OUTPUT_VALUES, $oc.getParentDRGElement().getName() );
 end
 
 rule DTABLE_SINGLEOUT_NONAME
 when
   $oc : OutputClause( parent instanceof DecisionTable, parent.output.size == 1, this.name != null )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.DTABLE_SINGLEOUT_NONAME );
+  reporter.report( DMNMessage.Severity.WARN,  $oc , Msg.DTABLE_SINGLEOUT_NONAME, $oc.getParentDRGElement().getName() );
 end
 
 rule DTABLE_SINGLEOUT_TYPEREF
 when
   $oc : OutputClause( parent instanceof DecisionTable, parent.output.size == 1, this.typeRef != null )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.DTABLE_SINGLEOUT_NOTYPEREF );
+  reporter.report( DMNMessage.Severity.WARN,  $oc , Msg.DTABLE_SINGLEOUT_NOTYPEREF, $oc.getParentDRGElement().getName() );
 end
 
 rule ELEMREF_NOHASH_p1
 when
   $oc : DMNElementReference( !href.startsWith("#"), !( href contains ":" ) ) 
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.ELEMREF_NOHASH );
+  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.ELEMREF_NOHASH, $oc.getParentDRGElement().getName() );
 end
 
 rule ELEMREF_NOHASH_p2
 when
   $oc : DMNElementReference( href contains ":", !href.substring(href.indexOf(":")+1).startsWith('#') )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.ELEMREF_NOHASH );
+  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.ELEMREF_NOHASH, $oc.getParentDRGElement().getName() );
 end
 
 function String rightOfHash(String input) {
     return input.substring(input.indexOf("#")+1);
 }
 
-rule ELEMREF_MISSING_TARGET
+rule ELEMREF_MISSING_INPUT
 when
-  $oc : DMNElementReference( $targetId : rightOfHash( href ) )
-  not ( DMNElement( id == $targetId ) ) 
+  $oc : DMNElementReference( $targetId : rightOfHash( href ),
+                             parent instanceof InformationRequirement,
+                             this == ((InformationRequirement)parent).requiredInput )
+  not ( InputData( id == $targetId ) )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.ELEMREF_MISSING_TARGET );
+  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.REQ_INPUT_NOT_FOUND_FOR_NODE, $targetId, $oc.getParentDRGElement().getName() );
+end
+
+rule ELEMREF_MISSING_DECISION
+when
+  $oc : DMNElementReference( $targetId : rightOfHash( href ),
+                             parent instanceof InformationRequirement,
+                             this == ((InformationRequirement)parent).requiredDecision )
+  not ( InputData( id == $targetId ) )
+then
+  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.REQ_DECISION_NOT_FOUND_FOR_NODE, $targetId, $oc.getParentDRGElement().getName() );
+end
+
+rule ELEMREF_MISSING_BKM
+when
+  $oc : DMNElementReference( $targetId : rightOfHash( href ),
+                             parent instanceof InformationRequirement,
+                             this == ((InformationRequirement)parent).requiredDecision )
+  not ( InputData( id == $targetId ) )
+then
+  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.REQ_BKM_NOT_FOUND_FOR_NODE, $targetId, $oc.getParentDRGElement().getName() );
 end
 
 rule FORMAL_PARAM_DUPLICATED
