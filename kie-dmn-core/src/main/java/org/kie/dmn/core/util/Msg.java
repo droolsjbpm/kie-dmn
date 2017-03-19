@@ -24,6 +24,8 @@ public class Msg {
     public static final Message1 MISSING_VARIABLE_FOR_INPUT            = new Message1( DMNMessageType.MISSING_VARIABLE, "Input Data node '%s' is missing the variable declaration" );
     public static final Message1 MISSING_VARIABLE_FOR_DECISION         = new Message1( DMNMessageType.MISSING_VARIABLE, "Decision node '%s' is missing the variable declaration" );
     public static final Message2 VARIABLE_NAME_MISMATCH_FOR_BKM        = new Message2( DMNMessageType.MISSING_VARIABLE, "Variable name '%s' does not match the Business Knowledge Model node name '%s'" );
+    public static final Message2 VARIABLE_NAME_MISMATCH_FOR_DECISION   = new Message2( DMNMessageType.MISSING_VARIABLE, "Variable name '%s' does not match the Decision node name '%s'" );
+    public static final Message2 VARIABLE_NAME_MISMATCH_FOR_INPUT      = new Message2( DMNMessageType.MISSING_VARIABLE, "Variable name '%s' does not match the Input Data node name '%s'" );
 
     // not consolidated yet
 

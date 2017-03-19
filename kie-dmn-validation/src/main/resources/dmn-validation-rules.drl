@@ -78,6 +78,20 @@ then
     reporter.report( DMNMessage.Severity.ERROR,  $d , Msg.VARIABLE_NAME_MISMATCH_FOR_BKM, $d.getVariable().getName(), $d.getName() );
 end
 
+rule DECISION_VAR_MISMATCH
+when
+    $d : Decision( variable != null, name != variable.name )
+then
+    reporter.report( DMNMessage.Severity.ERROR,  $d , Msg.VARIABLE_NAME_MISMATCH_FOR_DECISION, $d.getVariable().getName(), $d.getName() );
+end
+
+rule INPUT_VAR_MISMATCH
+when
+    $d : InputData( variable != null, name != variable.name )
+then
+    reporter.report( DMNMessage.Severity.ERROR,  $d , Msg.VARIABLE_NAME_MISMATCH_FOR_INPUT, $d.getVariable().getName(), $d.getName() );
+end
+
 rule CONTEXT_DUP_ENTRY
 when
   $ce1 : ContextEntry( parent instanceof Context )

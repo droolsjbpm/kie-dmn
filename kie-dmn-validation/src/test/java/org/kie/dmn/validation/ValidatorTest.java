@@ -151,13 +151,34 @@ public class ValidatorTest {
     public void testDECISION_MISSING_VARbis() {
         List<DMNMessage> validate = validator.validate( getReader( "DECISION_MISSING_VARbis.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
         assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
-        System.out.println(formatMessages( validate ));
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_VARIABLE ) ) );
     }
 
     @Test
     public void testINPUT_MISSING_VAR() {
         List<DMNMessage> validate = validator.validate( getReader( "INPUTDATA_MISSING_VAR.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_VARIABLE ) ) );
+    }
+
+    @Test
+    public void testBKM_MISMATCH_VAR() {
+        List<DMNMessage> validate = validator.validate( getReader( "BKM_MISMATCH_VAR.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_VARIABLE ) ) );
+    }
+
+    @Test
+    public void testDECISION_MISMATCH_VAR() {
+        List<DMNMessage> validate = validator.validate( getReader( "DECISION_MISMATCH_VAR.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_VARIABLE ) ) );
+    }
+
+    @Test
+    public void testINPUT_MISMATCH_VAR() {
+        List<DMNMessage> validate = validator.validate( getReader( "INPUTDATA_MISMATCH_VAR.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        System.out.println(formatMessages( validate ));
         assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_VARIABLE ) ) );
     }
