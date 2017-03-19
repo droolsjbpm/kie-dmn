@@ -10,8 +10,8 @@ public enum DMNMessageType {
     MISSING_EXPRESSION( "No decision logic was defined for the node or variable", Tag.COMPILATION, Tag.VALIDATION, Tag.DMN_CORE, Tag.DMN_VALIDATOR),
     MISSING_VARIABLE( "A variable declaration is missing", Tag.COMPILATION, Tag.VALIDATION, Tag.DMN_CORE, Tag.DMN_VALIDATOR ),
     VARIABLE_NAME_MISMATCH( "A variable name does not match the node it belongs to", Tag.COMPILATION, Tag.VALIDATION, Tag.DMN_CORE, Tag.DMN_VALIDATOR ),
-    DUPLICATE_CONTEXT_ENTRY( "Two or more context entries have variables with the same name", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
     MISSING_TYPE_REF("Type ref not defined", Tag.COMPILATION, Tag.VALIDATION, Tag.DMN_CORE, Tag.DMN_VALIDATOR ),
+    DUPLICATE_NAME("The referenced name is not unique with its scope", Tag.DMN_VALIDATOR ),
 
     FAILED_VALIDATOR ( "The DMN validator failed to load the validation rules. Impossible to proceed with validation.", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
     FAILED_XML_VALIDATION ( "DMN model failed XML schema validation", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
@@ -29,7 +29,6 @@ public enum DMNMessageType {
 
 
 
-    DRGELEM_NOT_UNIQUE ( "", Tag.DMN_VALIDATOR ),
     DTABLE_MULTIPLEOUT_NAME ( "", Tag.DMN_VALIDATOR ),
     DTABLE_MULTIPLEOUT_TYPEREF ( "", Tag.DMN_VALIDATOR ),
     DTABLE_PRIORITY_MISSING_OUTVALS ( "", Tag.DMN_VALIDATOR ),

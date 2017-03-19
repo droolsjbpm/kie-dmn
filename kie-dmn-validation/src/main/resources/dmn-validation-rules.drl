@@ -137,10 +137,12 @@ end
 
 rule DRGELEM_NOT_UNIQUE
 when
-  $x : DRGElement()
-  $y : DRGElement( name == $x.name, this != $x )
+  $x : DRGElement( parent instanceof Definitions )
+  $y : DRGElement( name == $x.name, parent instanceof Definitions,
+                   parent == $x.parent,
+                   ((Definitions)parent).drgElement.indexOf( this ) < ((Definitions)parent).drgElement.indexOf( $x ) )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $x , Msg.DRGELEM_NOT_UNIQUE );
+  reporter.report( DMNMessage.Severity.ERROR,  $x , Msg.DUPLICATE_DRG_ELEMENT, $x.getName() );
 end
 
 rule DTABLE_MULTIPLEOUT_NAME

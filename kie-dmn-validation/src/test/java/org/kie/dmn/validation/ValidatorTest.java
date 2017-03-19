@@ -240,23 +240,22 @@ public class ValidatorTest {
     public void testCONTEXT_DUP_ENTRY() {
         List<DMNMessage> validate = validator.validate( getReader( "CONTEXT_DUP_ENTRY.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
         assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DUPLICATE_CONTEXT_ENTRY ) ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DUPLICATE_NAME ) ) );
     }
     
     @Test
     public void testCONTEXT_ENTRY_NOTYPEREF() {
         List<DMNMessage> validate = validator.validate( getReader( "CONTEXT_ENTRY_NOTYPEREF.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
-        System.out.println(formatMessages( validate ));
         assertThat( formatMessages( validate ), validate.size(), is( 2 ) );
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_TYPE_REF ) ) );
     }
     
     @Test
     public void testDRGELEM_NOT_UNIQUE() {
-        Definitions definitions = utilDefinitions( "DRGELEM_NOT_UNIQUE.dmn", "DRGELEM_NOT_UNIQUE" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DRGELEM_NOT_UNIQUE ) ) );
+        List<DMNMessage> validate = validator.validate( getReader( "DRGELEM_NOT_UNIQUE.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        System.out.println(formatMessages( validate ));
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DUPLICATE_NAME ) ) );
     }
     
     @Test
