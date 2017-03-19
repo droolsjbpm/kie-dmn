@@ -35,6 +35,7 @@ public class Msg {
     public static final Message1 DTABLE_SINGLEOUT_NONAME             = new Message1( DMNMessageType.ILLEGAL_USE_OF_NAME, "Decision table with single output on node '%s' should not have output name" );
     public static final Message1 DTABLE_SINGLEOUT_NOTYPEREF          = new Message1( DMNMessageType.ILLEGAL_USE_OF_TYPEREF, "Decision table with single output on node '%s' should not have output typeRef" );
     public static final Message1 ELEMREF_NOHASH                      = new Message1( DMNMessageType.INVALID_HREF_SYNTAX,"The 'href' reference on node '%s' requires the use of the anchor syntax" );
+    public static final Message2 DUPLICATE_FORMAL_PARAM              = new Message2( DMNMessageType.DUPLICATED_PARAM, "The formal parameter '%s' on function definition on node '%s' is duplicated" );
 
 
     // not consolidated yet
@@ -64,7 +65,6 @@ public class Msg {
 
     public static final Message0 FAILED_VALIDATOR                    = new Message0( DMNMessageType.FAILED_VALIDATOR, "The Validator Was unable to compile embedded DMN validation rules, validation of the DMN Model cannot be performed." );
     public static final Message1 FAILED_XML_VALIDATION               = new Message1( DMNMessageType.FAILED_XML_VALIDATION, "Failed XML validation of DMN file: %s" );
-    public static final Message0 FORMAL_PARAM_DUPLICATED             = new Message0( DMNMessageType.FORMAL_PARAM_DUPLICATED, "formal parameter with duplicated name" );
     public static final Message0 INVOCATION_INCONSISTENT_PARAM_NAMES = new Message0( DMNMessageType.INVOCATION_INCONSISTENT_PARAM_NAMES, "Invocation Binding parameter names SHALL be a subset of the formalParameters of the calledFunction" );
     public static final Message0 INVOCATION_MISSING_TARGET           = new Message0( DMNMessageType.INVOCATION_MISSING_TARGET, "Invocation referencing a DRGElement target not found" );
     public static final Message0 INVOCATION_WRONG_PARAM_COUNT        = new Message0( DMNMessageType.INVOCATION_WRONG_PARAM_COUNT, "Invocation referecing a DRGElement but number of parameters is not consistent with target" );

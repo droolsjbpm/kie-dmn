@@ -109,7 +109,7 @@ rule CONTEXT_DUP_ENTRY
 when
   $ce1 : ContextEntry( parent instanceof Context, variable != null )
   $ce2 : ContextEntry( variable != null, variable!.name == $ce1.variable!.name, parent == $ce1.parent,
-                       ((Context)parent).contextEntry.indexOf( this ) < ((Context)parent).contextEntry.indexOf( $ce1 ) )
+                       this != $ce1 )
 then
   reporter.report( DMNMessage.Severity.ERROR,  $ce1 , Msg.DUPLICATE_CONTEXT_ENTRY, $ce1.getVariable().getName() );
 end
@@ -140,7 +140,7 @@ when
   $x : DRGElement( parent instanceof Definitions )
   $y : DRGElement( name == $x.name, parent instanceof Definitions,
                    parent == $x.parent,
-                   ((Definitions)parent).drgElement.indexOf( this ) < ((Definitions)parent).drgElement.indexOf( $x ) )
+                   this != $x )
 then
   reporter.report( DMNMessage.Severity.ERROR,  $x , Msg.DUPLICATE_DRG_ELEMENT, $x.getName() );
 end
@@ -213,7 +213,7 @@ when
   $oc : DMNElementReference( $targetId : rightOfHash( href ),
                              parent instanceof InformationRequirement,
                              this == ((InformationRequirement)parent).requiredDecision )
-  not ( InputData( id == $targetId ) )
+  not ( Decision( id == $targetId ) )
 then
   reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.REQ_DECISION_NOT_FOUND_FOR_NODE, $targetId, $oc.getParentDRGElement().getName() );
 end
@@ -221,9 +221,9 @@ end
 rule ELEMREF_MISSING_BKM
 when
   $oc : DMNElementReference( $targetId : rightOfHash( href ),
-                             parent instanceof InformationRequirement,
-                             this == ((InformationRequirement)parent).requiredDecision )
-  not ( InputData( id == $targetId ) )
+                             parent instanceof KnowledgeRequirement,
+                             this == ((KnowledgeRequirement)parent).requiredKnowledge )
+  not ( BusinessKnowledgeModel( id == $targetId ) )
 then
   reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.REQ_BKM_NOT_FOUND_FOR_NODE, $targetId, $oc.getParentDRGElement().getName() );
 end
@@ -233,7 +233,7 @@ when
     $fp1 : InformationItem( parent instanceof FunctionDefinition )
     $fp2 : InformationItem( name == $fp1.name, parent == $fp1.parent, this != $fp1 )
 then
-    reporter.report( DMNMessage.Severity.ERROR,  $fp1 , Msg.FORMAL_PARAM_DUPLICATED );
+    reporter.report( DMNMessage.Severity.ERROR,  $fp1 , Msg.DUPLICATE_FORMAL_PARAM, $fp1.getName(), $fp1.getParentDRGElement().getName() );
 end
 
 // The parameter names in the Binding elements SHALL be a subset of the formalParameters of the calledFunction.

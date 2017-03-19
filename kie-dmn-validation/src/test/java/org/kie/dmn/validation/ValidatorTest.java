@@ -239,7 +239,7 @@ public class ValidatorTest {
     @Test
     public void testCONTEXT_DUP_ENTRY() {
         List<DMNMessage> validate = validator.validate( getReader( "CONTEXT_DUP_ENTRY.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
-        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertThat( formatMessages( validate ), validate.size(), is( 2 ) );
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DUPLICATE_NAME ) ) );
     }
     
@@ -253,7 +253,7 @@ public class ValidatorTest {
     @Test
     public void testDRGELEM_NOT_UNIQUE() {
         List<DMNMessage> validate = validator.validate( getReader( "DRGELEM_NOT_UNIQUE.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
-        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertThat( formatMessages( validate ), validate.size(), is( 2 ) );
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DUPLICATE_NAME ) ) );
     }
     
@@ -301,10 +301,10 @@ public class ValidatorTest {
     
     @Test
     public void testFORMAL_PARAM_DUPLICATED() {
-        Definitions definitions = utilDefinitions( "FORMAL_PARAM_DUPLICATED.dmn", "FORMAL_PARAM_DUPLICATED" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.FORMAL_PARAM_DUPLICATED ) ) );
+        List<DMNMessage> validate = validator.validate( getReader( "FORMAL_PARAM_DUPLICATED.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        System.out.println( formatMessages( validate ) );
+        assertThat( formatMessages( validate ), validate.size(), is( 3 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DUPLICATED_PARAM ) ) );
     }
     
     @Test

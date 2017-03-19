@@ -17,6 +17,7 @@ public enum DMNMessageType {
     ILLEGAL_USE_OF_NAME("The referenced element should not have a name set", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
     ILLEGAL_USE_OF_TYPEREF("The referenced element should not have a typeref set", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
     INVALID_HREF_SYNTAX( "The 'href' attribute requires the use of anchor syntax", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
+    DUPLICATED_PARAM ( "The referenced param is duplicated", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
 
     FAILED_VALIDATOR ( "The DMN validator failed to load the validation rules. Impossible to proceed with validation.", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
     FAILED_XML_VALIDATION ( "DMN model failed XML schema validation", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
@@ -34,7 +35,6 @@ public enum DMNMessageType {
 
 
 
-    FORMAL_PARAM_DUPLICATED ( "", Tag.DMN_VALIDATOR ),
     INVOCATION_INCONSISTENT_PARAM_NAMES( "", Tag.DMN_VALIDATOR ),
     INVOCATION_MISSING_TARGET( "", Tag.DMN_VALIDATOR ),
     INVOCATION_WRONG_PARAM_COUNT( "", Tag.DMN_VALIDATOR ),
