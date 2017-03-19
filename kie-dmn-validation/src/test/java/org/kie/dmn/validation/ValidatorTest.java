@@ -222,7 +222,6 @@ public class ValidatorTest {
              <variable name="code in list of codes" typeRef="feel:string"/>
          */
         List<DMNMessage> validate = validator.validate( getReader( "NAME_INVALID_bis.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
-        System.out.println(formatMessages( validate ));
         assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.INVALID_NAME ) ) );
     }
@@ -230,7 +229,6 @@ public class ValidatorTest {
     @Test
     public void testNAME_INVALID_empty_name() {
         List<DMNMessage> validate = validator.validate( getReader( "DROOLS-1447.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
-        System.out.println(formatMessages( validate ));
         assertThat( formatMessages( validate ), validate.size(), is( 4 ) );
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.FAILED_XML_VALIDATION ) ) );
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.VARIABLE_NAME_MISMATCH ) ) );
@@ -240,18 +238,17 @@ public class ValidatorTest {
 
     @Test
     public void testCONTEXT_DUP_ENTRY() {
-        Definitions definitions = utilDefinitions( "CONTEXT_DUP_ENTRY.dmn", "CONTEXT_DUP_ENTRY" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.CONTEXT_DUP_ENTRY ) ) );
+        List<DMNMessage> validate = validator.validate( getReader( "CONTEXT_DUP_ENTRY.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.DUPLICATE_CONTEXT_ENTRY ) ) );
     }
     
     @Test
     public void testCONTEXT_ENTRY_NOTYPEREF() {
-        Definitions definitions = utilDefinitions( "CONTEXT_ENTRY_NOTYPEREF.dmn", "CONTEXT_ENTRY_NOTYPEREF" );
-        List<DMNMessage> validate = validator.validate(definitions);
-        
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.CONTEXT_ENTRY_NOTYPEREF ) ) );
+        List<DMNMessage> validate = validator.validate( getReader( "CONTEXT_ENTRY_NOTYPEREF.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        System.out.println(formatMessages( validate ));
+        assertThat( formatMessages( validate ), validate.size(), is( 2 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_TYPE_REF ) ) );
     }
     
     @Test

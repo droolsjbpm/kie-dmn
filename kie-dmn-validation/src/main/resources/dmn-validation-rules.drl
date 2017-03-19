@@ -107,17 +107,32 @@ end
 
 rule CONTEXT_DUP_ENTRY
 when
-  $ce1 : ContextEntry( parent instanceof Context )
-  $ce2 : ContextEntry( variable!.name == $ce1.variable!.name, parent == $ce1.parent, this != $ce1 )
+  $ce1 : ContextEntry( parent instanceof Context, variable != null )
+  $ce2 : ContextEntry( variable != null, variable!.name == $ce1.variable!.name, parent == $ce1.parent,
+                       ((Context)parent).contextEntry.indexOf( this ) < ((Context)parent).contextEntry.indexOf( $ce1 ) )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $ce1 , Msg.CONTEXT_DUP_ENTRY );
+  reporter.report( DMNMessage.Severity.ERROR,  $ce1 , Msg.DUPLICATE_CONTEXT_ENTRY, $ce1.getVariable().getName() );
 end
 
-rule CONTEXT_ENTRY_NOTYPEREF
+rule VARIABLE_NOTYPEREF
 when
-  $ce1 : ContextEntry( variable != null, variable.typeRef == null )
+  $ce1 : InformationItem( typeRef == null, !(parent instanceof Binding || parent instanceof FunctionDefinition || parent instanceof Relation ) )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $ce1 , Msg.CONTEXT_ENTRY_NOTYPEREF );
+  reporter.report( DMNMessage.Severity.WARN,  $ce1 , Msg.MISSING_TYPEREF_FOR_VARIABLE, $ce1.getName(), $ce1.getParentDRGElement().getName() );
+end
+
+rule PARAMETER_NOTYPEREF
+when
+  $ce1 : InformationItem( typeRef == null, parent instanceof FunctionDefinition )
+then
+  reporter.report( DMNMessage.Severity.WARN,  $ce1 , Msg.MISSING_TYPEREF_FOR_PARAMETER, $ce1.getName(), $ce1.getParentDRGElement().getName() );
+end
+
+rule COLUMN_NOTYPEREF
+when
+  $ce1 : InformationItem( typeRef == null, parent instanceof Relation )
+then
+  reporter.report( DMNMessage.Severity.WARN,  $ce1 , Msg.MISSING_TYPEREF_FOR_COLUMN, $ce1.getName(), $ce1.getParentDRGElement().getName() );
 end
 
 rule DRGELEM_NOT_UNIQUE

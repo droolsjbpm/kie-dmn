@@ -24,6 +24,10 @@ public class Msg {
     public static final Message2 VARIABLE_NAME_MISMATCH_FOR_BKM      = new Message2( DMNMessageType.VARIABLE_NAME_MISMATCH, "Variable name '%s' does not match the Business Knowledge Model node name '%s'" );
     public static final Message2 VARIABLE_NAME_MISMATCH_FOR_DECISION = new Message2( DMNMessageType.VARIABLE_NAME_MISMATCH, "Variable name '%s' does not match the Decision node name '%s'" );
     public static final Message2 VARIABLE_NAME_MISMATCH_FOR_INPUT    = new Message2( DMNMessageType.VARIABLE_NAME_MISMATCH, "Variable name '%s' does not match the Input Data node name '%s'" );
+    public static final Message1 DUPLICATE_CONTEXT_ENTRY             = new Message1( DMNMessageType.DUPLICATE_CONTEXT_ENTRY, "Duplicate context entry with variables named '%s'" );
+    public static final Message2 MISSING_TYPEREF_FOR_VARIABLE        = new Message2( DMNMessageType.MISSING_TYPE_REF, "Variable named '%s' is missing typeRef on node '%s'" );
+    public static final Message2 MISSING_TYPEREF_FOR_PARAMETER       = new Message2( DMNMessageType.MISSING_TYPE_REF, "Parameter named '%s' is missing typeRef on node '%s'" );
+    public static final Message2 MISSING_TYPEREF_FOR_COLUMN          = new Message2( DMNMessageType.MISSING_TYPE_REF, "Column named '%s' is missing typeRef on node '%s'" );
 
     // not consolidated yet
     public static final Message1 DECISION_NOT_FOUND_FOR_NAME                         = new Message1( DMNMessageType.DECISION_NOT_FOUND, "Decision not found for name '%s'" );
@@ -50,8 +54,6 @@ public class Msg {
     public static final Message2 ERR_EVAL_LIST_ELEMENT_ON_POSITION_ON_LIST           = new Message2( DMNMessageType.ERR_EVAL, "Error evaluating list element on position '%s' on list '%s'" );
     public static final Message3 ERR_EVAL_ROW_ELEMENT_ON_POSITION_ON_ROW_OF_RELATION = new Message3( DMNMessageType.ERR_EVAL, "Error evaluating row element on position '%s' on row '%s' of relation '%s'" );
 
-    public static final Message0 CONTEXT_DUP_ENTRY                   = new Message0( DMNMessageType.CONTEXT_DUP_ENTRY, "Context contains duplicate context entry keys" );
-    public static final Message0 CONTEXT_ENTRY_NOTYPEREF             = new Message0( DMNMessageType.CONTEXT_ENTRY_NOTYPEREF, "Context entry is missing typeRef" );
     public static final Message0 DRGELEM_NOT_UNIQUE                  = new Message0(
             DMNMessageType.DRGELEM_NOT_UNIQUE,
             "DRGElement = new Message0(DMNMessageTypeId.FEEL_PROBLEM, BKM | Decision | InputData | KnowledgeSource) name not unique in the model" );
