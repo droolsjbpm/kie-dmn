@@ -18,6 +18,8 @@ public enum DMNMessageType {
     ILLEGAL_USE_OF_TYPEREF("The referenced element should not have a typeref set", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
     INVALID_HREF_SYNTAX( "The 'href' attribute requires the use of anchor syntax", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
     DUPLICATED_PARAM ( "The referenced param is duplicated", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
+    PARAMETER_MISMATCH( "The named parameter does not match", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
+    DUPLICATED_ITEM_DEF( "The referenced item definition or item component is duplicated", Tag.COMPILATION, Tag.VALIDATION, Tag.DMN_VALIDATOR, Tag.DMN_CORE ),
 
     FAILED_VALIDATOR ( "The DMN validator failed to load the validation rules. Impossible to proceed with validation.", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
     FAILED_XML_VALIDATION ( "DMN model failed XML schema validation", Tag.VALIDATION, Tag.DMN_VALIDATOR ),
@@ -33,13 +35,6 @@ public enum DMNMessageType {
     ERR_EVAL( "", Tag.DMN_CORE),                                     // runtime
     ERR_INVOKE( "", Tag.DMN_CORE),                                   // runtime
 
-
-
-    INVOCATION_INCONSISTENT_PARAM_NAMES( "", Tag.DMN_VALIDATOR ),
-    INVOCATION_MISSING_TARGET( "", Tag.DMN_VALIDATOR ),
-    INVOCATION_WRONG_PARAM_COUNT( "", Tag.DMN_VALIDATOR ),
-    ITEMCOMP_DUPLICATED ( "", Tag.DMN_VALIDATOR ),
-    ITEMDEF_NOT_UNIQUE ( "", Tag.DMN_VALIDATOR ),
     RELATION_DUP_COLUMN ( "", Tag.DMN_VALIDATOR ),
     RELATION_ROW_CELL_NOTLITERAL ( "", Tag.DMN_VALIDATOR ),
     RELATION_ROW_CELLCOUNTMISMATCH ( "", Tag.DMN_VALIDATOR ),

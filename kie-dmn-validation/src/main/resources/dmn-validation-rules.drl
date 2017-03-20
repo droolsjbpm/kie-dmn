@@ -241,30 +241,37 @@ rule INVOCATION_INCONSISTENT_PARAM_NAMES
 when
     $inv : Invocation( $targetName : expression#LiteralExpression.text )
     $target : BusinessKnowledgeModel( name == $targetName )
-    accumulate ( Binding($s : parameter.name) from $inv.binding ; 
-                 $names : collectSet($s)  ) 
-    accumulate ( InformationItem($ts : name) from $target.encapsulatedLogic.formalParameter ; 
-                 $targetNames : collectSet($ts) ;
-                 ! $targetNames.containsAll($names) ) 
+    $b : Binding($s : parameter.name) from $inv.binding
+    not( InformationItem( name == $s ) from $target.encapsulatedLogic.formalParameter )
 then
-    reporter.report( DMNMessage.Severity.ERROR,  $inv , Msg.INVOCATION_INCONSISTENT_PARAM_NAMES );
+    reporter.report( DMNMessage.Severity.ERROR,  $b.getParameter() , Msg.UNKNOWN_PARAMETER, $s, $targetName, $inv.getParentDRGElement().getName() );
 end
 
-rule INVOCATION_MISSING_TARGET
-when
-    $inv : Invocation( $targetName : expression#LiteralExpression.text )
-    not( DRGElement( name == $targetName ) )  
-then
-    reporter.report( DMNMessage.Severity.ERROR,  $inv , Msg.INVOCATION_MISSING_TARGET );
-end
+// the following rule needs to be improved as an invocation element can be used to invoke
+// functions not defined in DRGelements
+//rule INVOCATION_MISSING_TARGET
+//when
+//    $inv : Invocation( $targetName : expression#LiteralExpression.text )
+//    not( DRGElement( name == $targetName ) )
+//then
+//    reporter.report( DMNMessage.Severity.ERROR,  $inv , Msg.INVOCATION_MISSING_TARGET );
+//end
 
 rule INVOCATION_WRONG_PARAM_COUNT
 when
     $inv : Invocation( $targetName : expression#LiteralExpression.text )
     BusinessKnowledgeModel( name == $targetName, encapsulatedLogic.formalParameter.size != $inv.binding.size ) 
 then
-    reporter.report( DMNMessage.Severity.ERROR,  $inv , Msg.INVOCATION_WRONG_PARAM_COUNT );
+    reporter.report( DMNMessage.Severity.ERROR,  $inv , Msg.PARAMETER_COUNT_MISMATCH, $targetName, $inv.getParentDRGElement().getName() );
 end
+
+function ItemDefinition getRootItemDef( ItemDefinition id ) {
+    ItemDefinition root = id;
+    while( !( root.getParent() instanceof Definitions ) ) {
+        root = (ItemDefinition) root.getParent();
+    }
+    return root;
+}
 
 // This is a lower level complement of ITEMDEF_NOT_UNIQUE below, for detecting duplicate attribute names inside the same ItemDefinition 
 rule ITEMCOMP_DUPLICATED
@@ -272,15 +279,15 @@ when
   $ic1 : ItemDefinition( parent instanceof ItemDefinition )
   $ic2 : ItemDefinition( name == $ic1.name, parent == $ic1.parent, this != $ic1 )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $ic1 , Msg.ITEMCOMP_DUPLICATED );
+  reporter.report( DMNMessage.Severity.ERROR,  $ic1 , Msg.DUPLICATED_ITEM_COMPONENT, $ic1.getName(), getRootItemDef( $ic1 ).getName() );
 end
 
 rule ITEMDEF_NOT_UNIQUE
 when
-  $x : ItemDefinition( !(parent instanceof ItemDefinition) )
-  $y : ItemDefinition( !(parent instanceof ItemDefinition), name == $x.name, this != $x )
+  $x : ItemDefinition( parent instanceof Definitions )
+  $y : ItemDefinition( parent instanceof Definitions, parent == $x.parent, name == $x.name, this != $x )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $x , Msg.ITEMDEF_NOT_UNIQUE );
+  reporter.report( DMNMessage.Severity.ERROR,  $x , Msg.DUPLICATED_ITEM_DEFINITION, $x.getName() );
 end
 
 rule RELATION_DUP_COLUMN

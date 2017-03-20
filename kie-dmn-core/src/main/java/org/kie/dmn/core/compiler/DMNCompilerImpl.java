@@ -317,7 +317,17 @@ public class DMNCompilerImpl
                     }
                 }
                 if( topLevel ) {
-                    types.registerType( type );
+                    DMNType registered = types.registerType( type );
+                    if( registered != type ) {
+                        MsgUtil.reportMessage( logger,
+                                               DMNMessage.Severity.ERROR,
+                                               itemDef,
+                                               dmnModel,
+                                               null,
+                                               null,
+                                               Msg.DUPLICATED_ITEM_DEFINITION,
+                                               itemDef.getName() );
+                    }
                 }
             } else {
                 MsgUtil.reportMessage( logger,
@@ -341,7 +351,17 @@ public class DMNCompilerImpl
             }
             type = compType;
             if( topLevel ) {
-                types.registerType( type );
+                DMNType registered = types.registerType( type );
+                if( registered != type ) {
+                    MsgUtil.reportMessage( logger,
+                                           DMNMessage.Severity.ERROR,
+                                           itemDef,
+                                           dmnModel,
+                                           null,
+                                           null,
+                                           Msg.DUPLICATED_ITEM_DEFINITION,
+                                           itemDef.getName() );
+                }
             }
         }
         return type;

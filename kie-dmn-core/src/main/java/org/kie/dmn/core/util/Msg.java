@@ -36,7 +36,13 @@ public class Msg {
     public static final Message1 DTABLE_SINGLEOUT_NOTYPEREF          = new Message1( DMNMessageType.ILLEGAL_USE_OF_TYPEREF, "Decision table with single output on node '%s' should not have output typeRef" );
     public static final Message1 ELEMREF_NOHASH                      = new Message1( DMNMessageType.INVALID_HREF_SYNTAX,"The 'href' reference on node '%s' requires the use of the anchor syntax" );
     public static final Message2 DUPLICATE_FORMAL_PARAM              = new Message2( DMNMessageType.DUPLICATED_PARAM, "The formal parameter '%s' on function definition on node '%s' is duplicated" );
+    public static final Message3 UNKNOWN_PARAMETER                   = new Message3( DMNMessageType.PARAMETER_MISMATCH, "Unknown parameter '%s' invoking function '%s' on node '%s'" );
+    public static final Message2 PARAMETER_COUNT_MISMATCH            = new Message2( DMNMessageType.PARAMETER_MISMATCH, "Parameter count mismatch invoking function '%s' on node '%s'" );
+    public static final Message2 DUPLICATED_ITEM_COMPONENT           = new Message2( DMNMessageType.DUPLICATED_ITEM_DEF, "Item Component '%s' is duplicated on Item Definition '%s'" );
+    public static final Message1 DUPLICATED_ITEM_DEFINITION          = new Message1( DMNMessageType.DUPLICATED_ITEM_DEF, "Item Definition '%s' is duplicated in the model" );
 
+    public static final Message0 FAILED_VALIDATOR                    = new Message0( DMNMessageType.FAILED_VALIDATOR, "The Validator Was unable to compile embedded DMN validation rules, validation of the DMN Model cannot be performed." );
+    public static final Message1 FAILED_XML_VALIDATION               = new Message1( DMNMessageType.FAILED_XML_VALIDATION, "Failed XML validation of DMN file: %s" );
 
     // not consolidated yet
     public static final Message1 DECISION_NOT_FOUND_FOR_NAME                         = new Message1( DMNMessageType.DECISION_NOT_FOUND, "Decision not found for name '%s'" );
@@ -63,13 +69,6 @@ public class Msg {
     public static final Message2 ERR_EVAL_LIST_ELEMENT_ON_POSITION_ON_LIST           = new Message2( DMNMessageType.ERR_EVAL, "Error evaluating list element on position '%s' on list '%s'" );
     public static final Message3 ERR_EVAL_ROW_ELEMENT_ON_POSITION_ON_ROW_OF_RELATION = new Message3( DMNMessageType.ERR_EVAL, "Error evaluating row element on position '%s' on row '%s' of relation '%s'" );
 
-    public static final Message0 FAILED_VALIDATOR                    = new Message0( DMNMessageType.FAILED_VALIDATOR, "The Validator Was unable to compile embedded DMN validation rules, validation of the DMN Model cannot be performed." );
-    public static final Message1 FAILED_XML_VALIDATION               = new Message1( DMNMessageType.FAILED_XML_VALIDATION, "Failed XML validation of DMN file: %s" );
-    public static final Message0 INVOCATION_INCONSISTENT_PARAM_NAMES = new Message0( DMNMessageType.INVOCATION_INCONSISTENT_PARAM_NAMES, "Invocation Binding parameter names SHALL be a subset of the formalParameters of the calledFunction" );
-    public static final Message0 INVOCATION_MISSING_TARGET           = new Message0( DMNMessageType.INVOCATION_MISSING_TARGET, "Invocation referencing a DRGElement target not found" );
-    public static final Message0 INVOCATION_WRONG_PARAM_COUNT        = new Message0( DMNMessageType.INVOCATION_WRONG_PARAM_COUNT, "Invocation referecing a DRGElement but number of parameters is not consistent with target" );
-    public static final Message0 ITEMCOMP_DUPLICATED                 = new Message0( DMNMessageType.ITEMCOMP_DUPLICATED, "itemComponent with duplicated name within a same parent itemDefinition" );
-    public static final Message0 ITEMDEF_NOT_UNIQUE                  = new Message0( DMNMessageType.ITEMDEF_NOT_UNIQUE, "itemDefinition name is not unique in the model" );
     public static final Message0 RELATION_DUP_COLUMN                 = new Message0( DMNMessageType.RELATION_DUP_COLUMN, "Relation contains duplicate column name" );
     public static final Message0 RELATION_ROW_CELL_NOTLITERAL        = new Message0( DMNMessageType.RELATION_ROW_CELL_NOTLITERAL, "Relation contains a row with a cell which is not a literalExpression" );
     public static final Message0 RELATION_ROW_CELLCOUNTMISMATCH      = new Message0( DMNMessageType.RELATION_ROW_CELLCOUNTMISMATCH, "Relation contains a row with wrong number of cells" );

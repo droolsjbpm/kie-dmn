@@ -44,7 +44,7 @@ public class DMNTypeRegistry {
         }
     }
 
-    public void registerType( DMNType type ) {
+    public DMNType registerType( DMNType type ) {
         if( type.getNamespace() == null && type.getName() == null ) {
             throw new IllegalArgumentException( "Unknown namespace or name. Unable to register type "+type );
         }
@@ -55,9 +55,10 @@ public class DMNTypeRegistry {
             this.types.put( type.getNamespace(), typesMap );
         }
         if( typesMap.containsKey( type.getName() ) ) {
-            throw new IllegalArgumentException( "Type name already registered. Existing type: "+types.get( type.getName() )+" - new type: "+type );
+            return typesMap.get( type.getName() );
         }
         typesMap.put( type.getName(), type );
+        return type;
     }
 
     public DMNType resolveType( String namespace, String name ) {
