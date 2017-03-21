@@ -39,6 +39,9 @@
 		</itemComponent>
 		<itemComponent id="_tPassenger_Status" name="Status">
 			<typeRef>feel:string</typeRef>
+			<allowedValues>
+				<text>"Gold", "Silver", "Bronze"</text>
+			</allowedValues>
 		</itemComponent>
 		<itemComponent id="_tPassenger_Miles" name="Miles">
 			<typeRef>feel:number</typeRef>
@@ -130,7 +133,7 @@
 			<formalParameter name="Status" typeRef="feel:string"/>
 			<decisionTable hitPolicy="UNIQUE">
 				<input id="b_Status_Priority_dt_i_Status" label="Status">
-					<inputExpression typeRef="feel:string">
+					<inputExpression typeRef="kie:FlightStatus">
 						<text>Status</text>
 					</inputExpression>
 					<inputValues>
