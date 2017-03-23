@@ -375,7 +375,6 @@ public class ValidatorTest {
     @Test
     public void testRELATION_ROW_CELLCOUNTMISMATCH() {
         List<DMNMessage> validate = validator.validate( getReader( "RELATION_ROW_CELLCOUNTMISMATCH.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
-        System.out.println( formatMessages( validate ) );
         assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.RELATION_CELL_COUNT_MISMATCH ) ) );
     }
@@ -383,8 +382,7 @@ public class ValidatorTest {
     @Test
     public void testREQAUTH_NOT_KNOWLEDGESOURCE() {
         List<DMNMessage> validate = validator.validate( getReader( "REQAUTH_NOT_KNOWLEDGESOURCE.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
-        System.out.println( formatMessages( validate ) );
-        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertThat( formatMessages( validate ), validate.size(), is( 3 ) );
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.REQAUTH_NOT_KNOWLEDGESOURCE ) ) );
     }
 
