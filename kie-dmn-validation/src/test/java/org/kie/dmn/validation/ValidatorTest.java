@@ -383,7 +383,7 @@ public class ValidatorTest {
     public void testREQAUTH_NOT_KNOWLEDGESOURCE() {
         List<DMNMessage> validate = validator.validate( getReader( "REQAUTH_NOT_KNOWLEDGESOURCE.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
         assertThat( formatMessages( validate ), validate.size(), is( 3 ) );
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.REQAUTH_NOT_KNOWLEDGESOURCE ) ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.REQ_NOT_FOUND ) ) );
     }
 
     @Test
@@ -397,19 +397,16 @@ public class ValidatorTest {
     @Test
     public void testREQAUTH_NOT_KNOWLEDGESOURCEbis() {
         // DROOLS-1435
-        Definitions definitions = utilDefinitions( "REQAUTH_NOT_KNOWLEDGESOURCEbis.dmn", "REQAUTH_NOT_KNOWLEDGESOURCEbis" );
-        List<DMNMessage> validate = validator.validate(definitions);
-
-        // this test should just pass without any NPE:
-        assertTrue( validate.size() > 0 );
+        List<DMNMessage> validate = validator.validate( getReader( "REQAUTH_NOT_KNOWLEDGESOURCEbis.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 0 ) );
     }
     
     @Test
     public void testTYPEREF_NO_FEEL_TYPE() {
-        Definitions definitions = utilDefinitions( "TYPEREF_NO_FEEL_TYPE.dmn", "TYPEREF_NO_FEEL_TYPE" );
-        List<DMNMessage> validate = validator.validate(definitions);
-
-        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.TYPEREF_NO_FEEL_TYPE ) ) );
+        List<DMNMessage> validate = validator.validate( getReader( "TYPEREF_NO_FEEL_TYPE.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        System.out.println(formatMessages( validate ) );
+        assertThat( formatMessages( validate ), validate.size(), is( 0 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.TYPE_REF_NOT_FOUND ) ) );
     }
     
     private String formatMessages(List<DMNMessage> messages) {

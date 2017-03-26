@@ -321,38 +321,38 @@ end
 
 rule REQAUTH_NOT_KNOWLEDGESOURCE
 when
-  AuthorityRequirement( requiredAuthority != null, $oc: requiredAuthority )
+  $ar : AuthorityRequirement( requiredAuthority != null, $oc: requiredAuthority )
   DMNElement( id == rightOfHash( $oc.href ) , !(this instanceof KnowledgeSource) ) 
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.REQAUTH_NOT_KNOWLEDGESOURCE );
+  reporter.report( DMNMessage.Severity.ERROR,  $oc , Msg.REQ_DEP_INVALID_TYPE, $oc.getHref(), $ar.getParentDRGElement().getName() );
 end
 
 rule TYPEREF_NO_FEEL_TYPE_p1
 when
   $o: Expression( typeRef!.prefix != null, getNamespaceURI( typeRef.prefix ) == DMNModelInstrumentedBase.URI_FEEL, BuiltInType.determineTypeFromName( typeRef.localPart ) == BuiltInType.UNKNOWN )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $o , Msg.TYPEREF_NO_FEEL_TYPE );
+  reporter.report( DMNMessage.Severity.ERROR,  $o , Msg.UNKNOWN_FEEL_TYPE_REF_ON_NODE, $o.getTypeRef(), $o.getParentDRGElement().getName() );
 end
 
 rule TYPEREF_NO_FEEL_TYPE_p2
 when
   $o: InformationItem( typeRef!.prefix != null, getNamespaceURI( typeRef.prefix ) == DMNModelInstrumentedBase.URI_FEEL, BuiltInType.determineTypeFromName( typeRef.localPart ) == BuiltInType.UNKNOWN )
 then
-  $o: reporter.report( DMNMessage.Severity.ERROR,  $o , Msg.TYPEREF_NO_FEEL_TYPE );
+  $o: reporter.report( DMNMessage.Severity.ERROR,  $o , Msg.UNKNOWN_FEEL_TYPE_REF_ON_NODE, $o.getTypeRef(), $o.getParentDRGElement().getName() );
 end
 
 rule TYPEREF_NO_FEEL_TYPE_p3
 when
   $o: ItemDefinition( typeRef!.prefix != null, getNamespaceURI( typeRef.prefix ) == DMNModelInstrumentedBase.URI_FEEL, BuiltInType.determineTypeFromName( typeRef.localPart ) == BuiltInType.UNKNOWN )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $o , Msg.TYPEREF_NO_FEEL_TYPE );
+  reporter.report( DMNMessage.Severity.ERROR,  $o , Msg.UNKNOWN_FEEL_TYPE_REF_ON_NODE, $o.getTypeRef(), $o.getParentDRGElement().getName() );
 end
 
 rule TYPEREF_NO_FEEL_TYPE_p4
 when
   $o: OutputClause( typeRef!.prefix != null, getNamespaceURI( typeRef.prefix ) == DMNModelInstrumentedBase.URI_FEEL, BuiltInType.determineTypeFromName( typeRef.localPart ) == BuiltInType.UNKNOWN )
 then
-  reporter.report( DMNMessage.Severity.ERROR,  $o , Msg.TYPEREF_NO_FEEL_TYPE );
+  reporter.report( DMNMessage.Severity.ERROR,  $o , Msg.UNKNOWN_FEEL_TYPE_REF_ON_NODE, $o.getTypeRef(), $o.getParentDRGElement().getName() );
 end
 
 rule TYPEREF_NOT_FEEL_NOT_DEF_p1
