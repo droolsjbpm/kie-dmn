@@ -23,9 +23,11 @@ public class Msg {
     public static final Message2 MISSING_EXPRESSION_FOR_INVOCATION                   = new Message2( DMNMessageType.MISSING_EXPRESSION, "Missing expression for parameter %s on node '%s'" );
     public static final Message1 MISSING_PARAMETER_FOR_INVOCATION                    = new Message1( DMNMessageType.MISSING_EXPRESSION, "Missing parameter for invocation node '%s'" );
     public static final Message2 MISSING_EXPRESSION_FOR_NAME                         = new Message2( DMNMessageType.MISSING_EXPRESSION, "No expression defined for name '%s' on node '%s'" );
+    public static final Message1 MISSING_ENTRIES_ON_CONTEXT                          = new Message1( DMNMessageType.MISSING_EXPRESSION, "Context expression has no entries on node '%s'" );
     public static final Message1 MISSING_VARIABLE_FOR_BKM                            = new Message1( DMNMessageType.MISSING_VARIABLE, "Business Knowledge Model node '%s' is missing the variable declaration" );
     public static final Message1 MISSING_VARIABLE_FOR_INPUT                          = new Message1( DMNMessageType.MISSING_VARIABLE, "Input Data node '%s' is missing the variable declaration" );
     public static final Message1 MISSING_VARIABLE_FOR_DECISION                       = new Message1( DMNMessageType.MISSING_VARIABLE, "Decision node '%s' is missing the variable declaration" );
+    public static final Message1 MISSING_VARIABLE_ON_CONTEXT                         = new Message1( DMNMessageType.MISSING_VARIABLE, "Context entry is missing variable declaration on node '%s'" );
     public static final Message2 VARIABLE_NAME_MISMATCH_FOR_BKM                      = new Message2( DMNMessageType.VARIABLE_NAME_MISMATCH, "Variable name '%s' does not match the Business Knowledge Model node name '%s'" );
     public static final Message2 VARIABLE_NAME_MISMATCH_FOR_DECISION                 = new Message2( DMNMessageType.VARIABLE_NAME_MISMATCH, "Variable name '%s' does not match the Decision node name '%s'" );
     public static final Message2 VARIABLE_NAME_MISMATCH_FOR_INPUT                    = new Message2( DMNMessageType.VARIABLE_NAME_MISMATCH, "Variable name '%s' does not match the Input Data node name '%s'" );

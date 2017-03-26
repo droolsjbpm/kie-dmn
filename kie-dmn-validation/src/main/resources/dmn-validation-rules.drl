@@ -114,6 +114,21 @@ then
   reporter.report( DMNMessage.Severity.ERROR,  $ce1 , Msg.DUPLICATE_CONTEXT_ENTRY, $ce1.getVariable().getName() );
 end
 
+rule CONTEXT_MISSING_ENTRIES
+when
+  $c : Context( contextEntry == null || contextEntry.isEmpty() )
+then
+  reporter.report( DMNMessage.Severity.WARN, $c , Msg.MISSING_ENTRIES_ON_CONTEXT, $c.getParentDRGElement().getName() );
+end
+
+rule CONTEXT_MISSING_VARIABLE
+when
+  $c : Context( contextEntry != null && ! contextEntry.isEmpty() )
+  $ce : ContextEntry( variable == null, parent == $c, $c.contextEntry.indexOf( this ) < $c.contextEntry.size()-1 )
+then
+  reporter.report( DMNMessage.Severity.ERROR, $ce , Msg.MISSING_VARIABLE_ON_CONTEXT, $c.getParentDRGElement().getName() );
+end
+
 rule VARIABLE_NOTYPEREF
 when
   $ce1 : InformationItem( typeRef == null, !(parent instanceof Binding || parent instanceof FunctionDefinition || parent instanceof Relation ) )

@@ -44,6 +44,8 @@ import org.kie.dmn.backend.marshalling.v1_1.DMNMarshallerFactory;
 import org.kie.dmn.core.DMNInputRuntimeTest;
 import org.kie.dmn.core.util.DMNRuntimeUtil;
 import org.kie.dmn.feel.parser.feel11.FEELParser;
+import org.kie.dmn.model.v1_1.Context;
+import org.kie.dmn.model.v1_1.ContextEntry;
 import org.kie.dmn.model.v1_1.DMNModelInstrumentedBase;
 import org.kie.dmn.model.v1_1.Definitions;
 
@@ -131,6 +133,23 @@ public class ValidatorTest {
         assertThat( formatMessages( validate ), validate.size(), is( 2 ) );
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.FAILED_XML_VALIDATION ) ) ); // this is schema validation
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_EXPRESSION ) ) );
+    }
+
+    @Test
+    public void testCONTEXT_MISSING_ENTRIES() {
+        List<DMNMessage> validate = validator.validate( getReader( "CONTEXT_MISSING_ENTRIES.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_EXPRESSION ) ) );
+    }
+
+    @Test
+    public void testCONTEXT_ENTRY_MISSING_VARIABLE() {
+        List<DMNMessage> validate = validator.validate( getReader( "CONTEXT_ENTRY_MISSING_VARIABLE.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
+        assertThat( formatMessages( validate ), validate.size(), is( 1 ) );
+        assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.MISSING_VARIABLE ) ) );
+        // check that it reports and error for the second context entry, but not for the last one
+        ContextEntry ce = (ContextEntry) validate.get( 0 ).getSourceReference();
+        assertThat( ((Context)ce.getParent()).getContextEntry().indexOf( ce ), is( 1 ) );
     }
 
     @Test
@@ -404,7 +423,6 @@ public class ValidatorTest {
     @Test
     public void testTYPEREF_NO_FEEL_TYPE() {
         List<DMNMessage> validate = validator.validate( getReader( "TYPEREF_NO_FEEL_TYPE.dmn" ), VALIDATE_SCHEMA, VALIDATE_MODEL, VALIDATE_COMPILATION);
-        System.out.println(formatMessages( validate ) );
         assertThat( formatMessages( validate ), validate.size(), is( 0 ) );
         assertTrue( validate.stream().anyMatch( p -> p.getMessageType().equals( DMNMessageType.TYPE_REF_NOT_FOUND ) ) );
     }
