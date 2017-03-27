@@ -43,6 +43,7 @@ import com.thoughtworks.xstream.io.xml.StaxWriter;
 import org.kie.dmn.api.marshalling.v1_1.DMNMarshaller;
 import org.kie.dmn.backend.marshalling.CustomStaxReader;
 import org.kie.dmn.backend.marshalling.CustomStaxWriter;
+import org.kie.dmn.backend.marshalling.DMNExtensionElementRegister;
 import org.kie.dmn.model.v1_1.Artifact;
 import org.kie.dmn.model.v1_1.Association;
 import org.kie.dmn.model.v1_1.AuthorityRequirement;
@@ -87,6 +88,7 @@ public class XStreamMarshaller
         implements DMNMarshaller {
 
     private static Logger logger = LoggerFactory.getLogger( XStreamMarshaller.class );
+    private DMNExtensionElementRegister extensionElementRegister;
 
     private static StaxDriver staxDriver;
     static {
@@ -336,6 +338,7 @@ public class XStreamMarshaller
         xStream.registerConverter(new DMNListConverter( xStream ) );
         xStream.registerConverter(new ElementCollectionConverter( xStream ) );
         xStream.registerConverter(new ExtensionElementsConverter( xStream ) );
+        extensionElementRegister.registerExtensionConverters(xStream);
         
         xStream.ignoreUnknownElements();
         
