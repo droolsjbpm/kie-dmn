@@ -1,4 +1,4 @@
-package org.kie.dmn.backend.marshalling;
+package org.kie.dmn.api.marshalling.v1_1;
 
 import com.thoughtworks.xstream.XStream;
 

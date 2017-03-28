@@ -40,18 +40,18 @@ public class ExtensionElementsConverter extends DMNModelInstrumentedBaseConverte
      * Currently ignoring all extensionElements.
      * Please note overriding {@link DMNBaseConverter#unmarshal(HierarchicalStreamReader, UnmarshallingContext)} in order to just skip all child elements of this extensionElements.
      */
-    @Override
-    public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-        Object obj = createModelObject();
-        assignAttributes( reader, obj );
-        while ( reader.hasMoreChildren() ) {
-            reader.moveDown();
-            String nodeName = reader.getNodeName();
-            // skipping nodeName
-            reader.moveUp();
-        }
-        return obj;
-    }
+//    @Override
+//    public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+//        Object obj = createModelObject();
+//        assignAttributes( reader, obj );
+//        while ( reader.hasMoreChildren() ) {
+//            reader.moveDown();
+//            String nodeName = reader.getNodeName();
+//            // skipping nodeName
+//            reader.moveUp();
+//        }
+//        return obj;
+//    }
 
     @Override
     protected void writeAttributes(HierarchicalStreamWriter writer, Object parent) {
