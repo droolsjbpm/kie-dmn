@@ -88,7 +88,7 @@ public class XStreamMarshaller
         implements DMNMarshaller {
 
     private static Logger logger = LoggerFactory.getLogger( XStreamMarshaller.class );
-    //private DMNExtensionElementRegister extensionElementRegister;
+    private DMNExtensionElementRegister extensionElementRegister;
 
     private static StaxDriver staxDriver;
     static {
@@ -108,6 +108,14 @@ public class XStreamMarshaller
         };
         staxDriver.setQnameMap(qmap);
         staxDriver.setRepairingNamespace(false);
+    }
+
+    public XStreamMarshaller() {
+
+    }
+
+    public XStreamMarshaller (DMNExtensionElementRegister extensionElementRegister) {
+        this.extensionElementRegister = extensionElementRegister;
     }
 
     @Override
@@ -338,7 +346,9 @@ public class XStreamMarshaller
         xStream.registerConverter(new DMNListConverter( xStream ) );
         xStream.registerConverter(new ElementCollectionConverter( xStream ) );
         xStream.registerConverter(new ExtensionElementsConverter( xStream ) );
-        //extensionElementRegister.registerExtensionConverters(xStream);
+        if(extensionElementRegister != null) {
+            extensionElementRegister.registerExtensionConverters(xStream);
+        }
         
         xStream.ignoreUnknownElements();
         

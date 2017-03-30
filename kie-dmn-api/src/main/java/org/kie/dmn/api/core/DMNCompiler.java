@@ -17,6 +17,7 @@
 package org.kie.dmn.api.core;
 
 import org.kie.api.io.Resource;
+import org.kie.dmn.api.marshalling.v1_1.DMNExtensionElementRegister;
 import org.kie.dmn.model.v1_1.Definitions;
 
 import java.io.Reader;
@@ -25,7 +26,11 @@ public interface DMNCompiler {
 
     DMNModel compile( Resource resource );
 
+    DMNModel compile( Resource resource, DMNExtensionElementRegister extensionElementRegister );
+
     DMNModel compile( Reader source );
+
+    DMNModel compile( Reader source, DMNExtensionElementRegister extensionElementRegister );
 
     DMNModel compile(Definitions dmndefs);
 }
